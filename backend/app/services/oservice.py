@@ -37,11 +37,11 @@ class Coservice():
         db_operator_update_data = {}
 
         if "пользователь" in Oupdatedata:
-            db_operator_update_data["user"] = ["пользователь"]
+            db_operator_update_data["user"] = Oupdatedata["пользователь"]
         if "локации" in Oupdatedata:
-            db_operator_update_data["locationn"] = ["локации"]
+            db_operator_update_data["location"] = Oupdatedata["локации"]
         if "график" in Oupdatedata:
-            db_operator_update_data["shedule"] = ["график"]
+            db_operator_update_data["shedule"] = Oupdatedata["график"]
 
         db_operator_update = self.repository.update_operator(оператор_id, db_operator_update_data)
 

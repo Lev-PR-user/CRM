@@ -33,7 +33,7 @@ class Cerepository():
             update_equipment_db = self.equipment_by_id(оборудование_id)
 
             if update_equipment_db is None:
-                raise HTTPException(status_code=500, detail="Такой статус не найдена")
+                raise HTTPException(status_code=500, detail="Такое оборудование не найдено")
 
             if "model" in equipmentupdatedata:
                 update_equipment_db.модель = equipmentupdatedata["model"]        
@@ -56,7 +56,7 @@ class Cerepository():
 
     def equipment_by_id(self, оборудование_id: int) -> Optional[ОборудованиеM]:
         try: 
-            self.db.query(ОборудованиеM).filter(ОборудованиеM.оборудование_id == оборудование_id).first()
+            return self.db.query(ОборудованиеM).filter(ОборудованиеM.оборудование_id == оборудование_id).first()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
 

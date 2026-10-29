@@ -13,17 +13,6 @@ class Ccvalidator():
 
         for field in required_fields:
 
-            if field not in clientdata or not clientdata["field"]:
+            if field not in clientdata or not clientdata[field]:
 
-                raise HTTPException(status_code=400, detail=f"Поле '{field}' обязательно для заполнения")
-
-    def validate_update_client(self, clientupdatedata: Dict[str, Any]):
-        """Валидация перед обновлением клиента"""
-
-        required_fields = ["имя", "тип", "контакты"]
-
-        for field in required_fields:
-
-            if field not in clientupdatedata or not clientupdatedata["field"]:
-                
                 raise HTTPException(status_code=400, detail=f"Поле '{field}' обязательно для заполнения")

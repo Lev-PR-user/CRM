@@ -23,7 +23,7 @@ class Ccservice():
 
         return {
             "message": "Клиент создан",
-            "Client": {
+            "client": {
                 "id": db_client.клиент_id,
                 "name": db_client.имя,
                 "type": db_client.тип,
@@ -34,18 +34,16 @@ class Ccservice():
 
     def update_client(self, клиент_id: int, clientupdatedata: Dict[str, Any]) -> Dict[str, Any]:
 
-        self.validator.validate_update_client(clientupdatedata)
-
         db_client_update_data = {}
 
         if "имя" in clientupdatedata:
             db_client_update_data["name"] = clientupdatedata["имя"]
         if "тип" in clientupdatedata:
-            db_client_update_data["type"] = clientupdatedata["имя"]
+            db_client_update_data["type"] = clientupdatedata["тип"]
         if "заметки" in clientupdatedata:
-            db_client_update_data["notes"] = clientupdatedata["имя"]
+            db_client_update_data["notes"] = clientupdatedata["заметки"]
         if "контакты" in clientupdatedata:
-            db_client_update_data["contacts"] = clientupdatedata["имя"]
+            db_client_update_data["contacts"] = clientupdatedata["контакты"]
 
         db_client_update = self.repository.update_client(клиент_id, db_client_update_data)
 

@@ -17,7 +17,7 @@ def test_register_user(client):
             "название_организации": "ООО Ромашка",
             "почта": "ivan@example.com",
             "номер": "79991234567",
-            "роль": role_id,
+            "роль": 1,
         },
     )
     assert response.status_code == 200, response.json()

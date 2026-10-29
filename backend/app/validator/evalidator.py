@@ -16,14 +16,3 @@ class Cevalidator():
             if field not in equipmentdata or not equipmentdata[field]: 
 
                 raise HTTPException(status_code=400, detail=f"Поле '{field}' обязательно для заполнения")
-
-    def validate_update_equipment(self, equipmentupdatedata: Dict[str, Any]):
-        """Валидация перед обновлением оборудования"""
-
-        required_fields = ["модель", "серия", "статус", "расположение"] 
-
-        for field in required_fields:
-
-            if field not in equipmentupdatedata or not equipmentupdatedata[field]:
-
-                raise HTTPException(status_code=400, detail=f"Поле '{field}' обязательно для заполнения")

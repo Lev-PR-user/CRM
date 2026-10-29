@@ -39,8 +39,8 @@ class Corepository():
                 update_operators_db.пользователь = Oupdatedata["user"]
             if "location" in Oupdatedata: 
                 update_operators_db.локации = Oupdatedata["location"]   
-            if "schedule" in Oupdatedata:
-                update_operators_db.график = Oupdatedata["schedule"]
+            if "shedule" in Oupdatedata:
+                update_operators_db.график = Oupdatedata["shedule"]
 
             self.db.commit()
 

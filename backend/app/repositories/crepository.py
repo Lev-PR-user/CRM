@@ -73,9 +73,7 @@ class Ccrepository():
             self.db.delete(client_db)
 
             self.db.commit()
-
-            self.db.refresh(client_db)
-
+            
             return True
 
         except HTTPException:

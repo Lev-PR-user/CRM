@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from ..services import Ceservice
 from ..db import get_db
 
-ERoute = APIRouter(prefix="/equipments", tags=["/equipments"])
+ERoute = APIRouter(prefix="/equipment", tags=["/equipment"])
 
 @ERoute.post("/create_equipment")
 def create_equipment(equipmentdata: Dict[str, Any], db: Session = Depends(get_db)):

@@ -34,8 +34,6 @@ class Ceservice():
 
     def Supdate_equipment(self, equipmentupdatedata: Dict[str, Any], оборудование_id: int) -> Dict[str, Any]:
 
-        self.validator.validate_update_equipment(equipmentupdatedata)
-
         db_equipment_update_data = {}
 
         if "модель" in equipmentupdatedata:

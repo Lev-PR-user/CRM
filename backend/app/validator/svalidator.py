@@ -19,7 +19,7 @@ class Csvalidator():
 
         if existing_status: 
 
-            raise HTTPException(status_code=400, detail=f"Нслуга с названием '{name}' уже существует")
+            raise HTTPException(status_code=400, detail=f"Услуга с названием '{name}' уже существует")
 
     def validate_update_status(self, услуга_id: int, serviceupdatedata: Dict[str, Any]): 
                 """Валидация перед обновлением услуги""" 
