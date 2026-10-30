@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+from fastapi import HTTPException
 from ..repositories import Clrepository
 from ..validator import Clvalidator
 
@@ -16,6 +17,24 @@ class Clservice():
             "address": db_location.адрес,
             "openning_hours": db_location.часы_работы
         }
+
+    def Sget_all(self):
+        return [self._public(l) for l in self.repository.get_all()]
+
+    def Sget_location(self, локация_id: Optional[int], название: Optional[str], адрес: Optional[str]):
+
+        if локация_id:
+            db_location = self.repository.location_by_id(локация_id)
+        elif название:
+            db_location = self.repository.location_by_name(название)
+        elif адрес:
+            db_location = self.repository.location_by_address(адрес)
+        else:
+            raise HTTPException(status_code=400, detail="Введите данные для поиска")
+
+        if db_location is None:
+            raise HTTPException(status_code=400, detail="Такой локации нет")
+
 
     def Screate_location(self, locationdata: Dict[str, Any]) -> Dict[str, Any]:
         self.validator.validate_create_location(locationdata)

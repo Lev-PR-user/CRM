@@ -6,7 +6,6 @@ from ..db import get_db
 
 URoute = APIRouter(prefix="/pusers", tags=["pusers"])
 
-
 @URoute.post("/registers")
 def register(userdata: Dict[str, Any], db: Session = Depends(get_db)):
     try:

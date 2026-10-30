@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
 from ..models import Base, РолиM
@@ -7,6 +7,9 @@ class Crrepository():
 
     def __init__(self, db: Session):
         self.db = db
+
+    def get_all(self) -> List[РолиM]:
+        return self.db.query(РолиM).all()
 
     def create_role(self, roledata: Dict[str, Any]) -> РолиM:
         try:
@@ -27,9 +30,9 @@ class Crrepository():
             self.db.rollback()
             raise
 
-    def update_role(self, роль_id: int, updateroledata: Dict[str, Any]) -> РолиM:
+    def update_role(self, роль_id: Optional[int], название_роли: Optional[str], updateroledata: Dict[str, Any]) -> РолиM:
         try:
-            update_role_db = self.role_by_id(роль_id)
+            update_role_db = self.role_by_id(роль_id) or self.role_by_name(название_роли)
 
             if update_role_db is None:
                 raise HTTPException(status_code=500, detail="Такая роль не найдена")
@@ -67,14 +70,18 @@ class Crrepository():
             self.db.rollback()
             raise
 
-    def role_by_id(self, роль_id: int) -> Optional[РолиM]:
+    def role_by_id(self, роль_id: Optional[int]) -> Optional[РолиM]:
         try:
+            if роль_id is None:
+                return None
             return self.db.query(РолиM).filter(РолиM.роль_id == роль_id).first()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
 
-    def role_by_name(self, название_роли: str) -> Optional[РолиM]:
+    def role_by_name(self, название_роли: Optional[str],) -> Optional[РолиM]:
         try: 
+            if название_роли is None: 
+                return None
             return self.db.query(РолиM).filter(РолиM.название_роли == название_роли).first()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Такой роли нет в базе данных: {str(e)}")

@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..models import УслугиM
@@ -6,6 +6,9 @@ from ..models import УслугиM
 class Csrepository():
     def __init__(self, db: Session):
         self.db = db
+
+    def get_all(self) -> List[УслугиM]:
+        return self.db.query(УслугиM).all()
 
     def create_service(self, servicedata: Dict[str, Any]) -> УслугиM:
         try:

@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from ..models import СтатусОборудованияM
@@ -6,6 +6,9 @@ from ..models import СтатусОборудованияM
 class Cstatus_Erepository():
     def __init__(self, db: Session):
         self.db = db
+
+    def get_all(self) -> List[СтатусОборудованияM]:
+        return self.db.query(СтатусОборудованияM).all()
 
     def create_status_equipment(self, SEdata: Dict[str, Any]) -> СтатусОборудованияM:
         try: 

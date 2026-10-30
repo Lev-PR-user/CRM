@@ -22,10 +22,18 @@ class Ccservice():
     def Sget_all(self) -> List[Dict[str, Any]]:
         return [self._public(c) for c in self.repository.get_all()]
 
-    def get_by_id(self, клиент_id: int) -> Dict[str, Any]:
-        db_client = self.repository.client_by_id(клиент_id)
+    def Sget_client(self, клиент_id, имя) -> Dict[str, Any]:
+
+        if клиент_id:
+            db_client = self.repository.client_by_id(клиент_id)
+        elif имя:
+            db_client = self.repository.client_by_name(имя)
+        else: 
+            raise HTTPException(status_code=400, detail="Введите данные для поиска")
+
         if db_client is None:
-            raise HTTPException(status_code=404, detail="Клиент не найден")
+            raise HTTPException(status_code=400, detail="Такого клиента нет")
+
         return self._public(db_client)
 
     def Screate_client(self, clientdata: Dict[str, Any]) -> Dict[str, Any]:

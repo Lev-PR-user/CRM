@@ -66,6 +66,12 @@ class Ccrepository():
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
 
+    def client_by_name(self, имя: str) -> Optional[КлиентыM]:
+        try:
+            return self.db.query(КлиентыM).filter(КлиентыM.имя == имя).first()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
+
     def delete_client(self, клиент_id: int) -> bool:
         try: 
             client_db = self.client_by_id(клиент_id)

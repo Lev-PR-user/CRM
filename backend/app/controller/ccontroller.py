@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from ..db import get_db
@@ -6,11 +6,21 @@ from ..services import Ccservice, get_current_user
 
 PCRoute = APIRouter(prefix="/pclients", tags=["/pclients"])
 
-PCRoute.get("/clients")
-def get_client(db: Session = Depends(get_db)):
+@PCRoute.get("/clients")
+def get_all(db: Session = Depends(get_db)):
     try:
         service = Ccservice(db)
         return service.Sget_all()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при получении клиента: {str(e)}")
+
+@PCRoute.get("/client_search")
+def get_client(клиент_id: Optional[int], имя: Optional[str], db: Session = Depends(get_db)):
+    try: 
+        service = Ccservice(db)
+        return service.Sget_client(клиент_id, имя)
     except HTTPException:
         raise
     except Exception as e:
@@ -30,7 +40,7 @@ def create_client(clientdata: Dict[str, Any], db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при создании клиента: {str(e)}")
 
-@CRoute.put("/client_update")
+@CRoute.patch("/client_update")
 def update_client(клиент_id: int, clientupdatedata: Dict[str, Any], db: Session = Depends(get_db)):
     try:
         service = Ccservice(db)

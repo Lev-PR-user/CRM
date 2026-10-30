@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..models import ОператорыM
@@ -6,6 +6,9 @@ from ..models import ОператорыM
 class Corepository():
     def __init__(self, db: Session):
         self.db = db
+
+    def get_all(self,) -> List[ОператорыM]:
+        return self.db.query(ОператорыM).all()
     
     def create_operator(self, Odata: Dict[str, Any]) -> ОператорыM:
         try:
@@ -52,12 +55,20 @@ class Corepository():
             self.db.rollback()
             raise
 
-    def operator_by_id(self, оператор_id: int) -> Optional[ОператорыM]:
+    def operator_by_id(self, оператор_id: Optional[int]) -> Optional[ОператорыM]:
         try:
+            if оператор_id is None:
+                return None
             return self.db.query(ОператорыM).filter(ОператорыM.оператор_id == оператор_id).first()
-        
         except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
 
+    def operator_by_location(self, локации: Optional[str]) -> Optional[ОператорыM]:
+        try:
+            if локации is None:
+                return None
+            return self.db.query(ОператорыM).filter(ОператорыM.локации == локации).first()
+        except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
 
     def delete_operator(self, оператор_id: int) -> bool:

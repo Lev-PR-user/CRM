@@ -1,12 +1,32 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import get_db
 from ..services import Cstatus_Eservice, get_current_user
 
-SERoute = APIRouter(prefix="/status_equipment", 
-                    tags=["/status_equipment"],
+SERoute = APIRouter(prefix="/status_equipments", 
+                    tags=["/status_equipments"],
                     dependencies=[Depends(get_current_user)])
+
+@SERoute.get("/status_equipments")
+def get_all(db: Session = Depends(get_db)):
+    try:
+        service = Cstatus_Eservice(db)
+        return service.get_all()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при получении статуса оборудования: {str(e)}")
+
+@SERoute.get("/status_equipment_search")
+def get_status_equipments(статус_уведомления_id: Optional[int], статус: Optional[str], db: Session = Depends(get_db)):
+    try:
+        service = Cstatus_Eservice(db)
+        return service.get_status_equipment(статус_уведомления_id, статус)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при получении статуса оборудования: {str(e)}")
 
 @SERoute.post("/status_equipment_create")
 def create_status_equipment(SEdata: Dict[str, Any], db: Session = Depends(get_db)):

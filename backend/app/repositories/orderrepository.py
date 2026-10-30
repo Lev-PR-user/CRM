@@ -7,6 +7,9 @@ class Corderrepository():
     def __init__(self, db: Session):
         self.db = db
 
+    def get_all(self, пользователь_id: int):
+        
+
     def create_order(self, orderdata: Dict[str, Any]) -> ЗаказыM:
         try:
 

@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from ..models import ТипКлиентаM
@@ -6,6 +6,9 @@ from ..models import ТипКлиентаM
 class Ctcrepository():
     def __init__(self, db: Session):
         self.db = db
+
+    def get_all(self) -> List[ТипКлиентаM]: 
+        return self.db.query(ТипКлиентаM).all()
 
     def create_type_client(self, TCdata: Dict[str, Any]) -> ТипКлиентаM:
         try:
@@ -48,12 +51,16 @@ class Ctcrepository():
 
     def type_client_by_id(self, тип_клиента_id: int) -> Optional[ТипКлиентаM]:
         try:
+            if тип_клиента_id is None:
+                return None
             return self.db.query(ТипКлиентаM).filter(ТипКлиентаM.тип_клиента_id == тип_клиента_id).first()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
 
     def type_client_by_type(self, тип: str) -> Optional[ТипКлиентаM]:
         try:
+            if тип is None:
+                return None
             return self.db.query(ТипКлиентаM).filter(ТипКлиентаM.тип == тип).first()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")

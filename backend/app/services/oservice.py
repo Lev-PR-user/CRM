@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+from fastapi import HTTPException
 from ..repositories import Corepository
 from ..validator import Covalidator
 
@@ -16,6 +17,23 @@ class Coservice():
             "locationn": db_operator.локации,
             "shedule": db_operator.график
         }
+
+    def Sget_all(self):
+        return [self._public(o) for o in self.repository.get_all()]
+
+    def Sget_operator(self, оператор_id: Optional[int], локации: Optional[str]):
+
+        if оператор_id:
+            db_operator = self.repository.operator_by_id(оператор_id) 
+        elif локации: 
+            db_operator = self.repository.operator_by_location(локации)
+        else:
+            raise HTTPException(status_code=400, detail="Введите данные для поиска")
+
+        if db_operator is None:
+            raise HTTPException(status_code=400, detail="Такого оператора нет")
+
+        return self._public(db_operator)
 
     def Screate_operator(self, Odata: Dict[str, Any]) -> Dict[str, Any]:
 

@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+from fastapi import HTTPException
 from ..repositories import Cstatus_Erepository
 from ..validator import Cstatus_Evalidator
 
@@ -14,6 +15,23 @@ class Cstatus_Eservice():
             "id": db_status_equipment.статус_оборудования_id,
             "status_equipment": db_status_equipment.статус
             }
+
+    def get_all(self):
+        return self.repository.get_all()
+
+    def get_status_equipment(self, статус_уведомления_id: Optional[int], статус: Optional[str]):
+
+        if статус_уведомления_id:
+            db_status_equipment = self.repository.status_equipment_by_id(статус_уведомления_id)
+        elif статус:
+            db_status_equipment = self.repository.status_by_name(статус)
+        else:
+            raise HTTPException(status_code=400, detail="Введите данные для поиска") 
+
+        if db_status_equipment is None:
+            raise HTTPException(status_code=400, detail="Такого статуса нет")
+
+        return self._public(db_status_equipment)
     
     def Screate_status_equipment(self, SEdata: Dict) -> Dict[str, Any]:
         

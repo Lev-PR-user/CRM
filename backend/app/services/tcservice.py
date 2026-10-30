@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+from fastapi import HTTPException
 from ..repositories import Ctcrepository
 from ..validator import Сtcvalidator
 
@@ -14,6 +15,23 @@ class Ctcservice():
             "id": db_type_client.тип_клиента_id,
             "type": db_type_client.тип
             }
+
+    def get_all(self):
+        return [self._public(tc) for tc in self.repository.get_all()]
+
+    def get_type_client(self, тип: Optional[str], тип_клиента_id: Optional[int]):
+
+        if тип:
+            db_type_client = self.repository.type_client_by_type(тип)
+        elif тип_клиента_id:
+            db_type_client = self.repository.type_client_by_id(тип_клиента_id)
+        else:
+            raise HTTPException(status_code=400, detail="Введите данные для поиска")
+
+        if db_type_client is None:
+            raise HTTPException(status_code=400, detail="Такого типа нет") 
+
+        return self._public(db_type_client)
 
     def Screate_type_client(self, TCdata: Dict[str, Any]) -> Dict[str, Any]:
 

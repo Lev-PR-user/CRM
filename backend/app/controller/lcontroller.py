@@ -1,8 +1,30 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import get_db
 from ..services import Clservice, get_current_user
+
+PLRoute = APIRouter(prefix="/plocations", tags=["/plocations"])
+
+@PLRoute.get("/locations")
+def get_all(db: Session = Depends(get_db)):
+    try:
+        service = Clservice(db)
+        return service.Sget_all()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при получении локаций: {str(e)}")        
+
+@PLRoute.get("/location_search")
+def get_location(локация_id: Optional[int], название: Optional[str], адрес: Optional[str], db: Session = Depends(get_db)):
+    try:
+        service = Clservice(db)
+        return service.Sget_location(локация_id, название, адрес)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при получении локаций: {str(e)}")
 
 LRoute = APIRouter(prefix="/locations", 
                    tags=["/locations"],

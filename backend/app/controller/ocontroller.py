@@ -8,6 +8,26 @@ ORoute = APIRouter(prefix="/operators",
                    tags=["/operators"],
                    dependencies=[Depends(get_current_user)])
 
+@ORoute.get("/operators")
+def get_all(db: Session = Depends(get_db)):
+    try:
+        service = Coservice(db)
+        return service.Sget_all()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при получении оператора: {str(e)}") 
+
+@ORoute.get("/operator_search")
+def get_operators(оператор_id: Optional[int], локации: Optional[str], db: Session = Depends(get_db)):
+    try:
+        service = Coservice(db)
+        return service.Sget_operator(оператор_id, локации)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при получении оператора: {str(e)}") 
+
 @ORoute.post("/operator_create")
 def create_operators(Odata: Dict[str, Any], db: Session = Depends(get_db)):
     try:

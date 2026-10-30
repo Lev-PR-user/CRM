@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
+from fastapi import HTTPException
 from ..repositories import Cerepository
 from ..validator import Cevalidator
 
@@ -17,6 +18,25 @@ class Ceservice():
             "status": db_equipment.статус,
             "location": db_equipment.расположение
         }
+
+    def Sget_all(self) -> List[Dict[str, Any]]:
+        return [self._public(e) for e in self.repository.get_all()]
+
+    def Sget_equipment(self, оборудование_id: Optional[int], модель: Optional[str], серия: Optional[str]):
+                
+        if оборудование_id:
+           equipment_db =  self.repository.equipment_by_id(оборудование_id)
+        elif модель is not None:
+            equipment_db = self.repository.equipment_by_model(модель)
+        elif серия is not None:
+            equipment_db = self.repository.equipment_by_series(серия)
+        else:
+            raise HTTPException(status_code=400, detail="Введите данные для поиска")
+
+        if equipment_db is None:
+            raise HTTPException(status_code=400, detail="Такого клиента нет")
+
+        return self._public(equipment_db)
 
     def Screate_equipment(self, equipmentdata: Dict[str, Any]) -> Dict[str, Any]:
 

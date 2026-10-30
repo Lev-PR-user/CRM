@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 import os
 
 from app.controller import URoute, DURoute, RRoute
-from app.controller import SERoute, ERoute
+from app.controller import SERoute, ERoute, PERoute
 from app.controller import LRoute, SRoute
 from app.controller import ORoute, TCRoute
-from app.controller import CRoute, ORDERoute
+from app.controller import CRoute, PCRoute, ORDERoute
 
 load_dotenv()
 
@@ -24,6 +24,8 @@ app.add_middleware(
 
 """"Публичные маршруты"""
 app.include_router(DURoute)
+app.include_router(PCRoute)
+app.include_router(PERoute)
 
 """Защищенные маршруты"""
 app.include_router(URoute)

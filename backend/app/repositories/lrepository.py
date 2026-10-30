@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..models import ЛокацииM
@@ -6,6 +6,9 @@ from ..models import ЛокацииM
 class Clrepository():
     def __init__(self, db: Session):
         self.db = db
+
+    def get_all(self) -> List[ЛокацииM]:
+        return self.db.query(ЛокацииM).all()
 
     def create_location(self, locationdata: Dict[str, Any]) -> ЛокацииM:
         try:
@@ -81,6 +84,12 @@ class Clrepository():
     def location_by_address(self, адрес: str) -> Optional[ЛокацииM]:
         try: 
             return self.db.query(ЛокацииM).filter(ЛокацииM.адрес == адрес).first()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Такого адреса нет: {str(e)}")
+
+    def location_by_name(self, название: str) -> Optional[ЛокацииM]:
+        try: 
+            return self.db.query(ЛокацииM).filter(ЛокацииM.название == название).first()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Такого адреса нет: {str(e)}")
         

@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..models import ОборудованиеM 
@@ -6,6 +6,9 @@ from ..models import ОборудованиеM
 class Cerepository():
     def __init__(self, db: Session):
         self.db = db
+
+    def get_all(self) -> List[ОборудованиеM]:
+        return self.db.query(ОборудованиеM).all()
 
     def create_equipment(self, equipmentdata: Dict[str, Any]) -> ОборудованиеM:
         try:
@@ -57,6 +60,18 @@ class Cerepository():
     def equipment_by_id(self, оборудование_id: int) -> Optional[ОборудованиеM]:
         try: 
             return self.db.query(ОборудованиеM).filter(ОборудованиеM.оборудование_id == оборудование_id).first()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
+
+    def equipment_by_model(self, модель: str) -> Optional[ОборудованиеM]:
+        try: 
+            return self.db.query(ОборудованиеM).filter(ОборудованиеM.модель == модель).first()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
+
+    def equipment_by_series(self, серия: str) -> Optional[ОборудованиеM]:
+        try: 
+            return self.db.query(ОборудованиеM).filter(ОборудованиеM.серия == серия).first()
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
 

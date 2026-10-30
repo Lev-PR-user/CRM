@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from fastapi import HTTPException
 from ..repositories import Crrepository
 
@@ -21,7 +21,7 @@ class Crvalidator:
 
             raise HTTPException(status_code=400, detail=f"Роль с названием '{name}' уже существует") 
         
-    def validate_update_role(self, роль_id: int, updateroledata: Dict[str, Any]): 
+    def validate_update_role(self, роль_id: Optional[int], updateroledata: Dict[str, Any]): 
         """Валидация перед обновлением роли""" 
 
         if "название_роли" in updateroledata: 

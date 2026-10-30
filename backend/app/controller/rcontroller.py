@@ -1,4 +1,4 @@
-from typing import Dict, Any 
+from typing import Dict, Any, Optional
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from ..db import get_db
@@ -7,6 +7,26 @@ from ..services import Crservice, get_current_user
 RRoute = APIRouter(prefix="/roles", 
                    tags=["roles"],
                    dependencies=[Depends(get_current_user)])
+
+@RRoute.get("/roles")
+def get_all(db: Session = Depends(get_db)):
+    try:
+        service = Crservice(db)
+        return service.Sget_all()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при получении ролей: {str(e)}") 
+
+@RRoute.get("/role_search")
+def get_roles(роль_id: Optional[int], название_роли: Optional[str], db: Session = Depends(get_db)):
+    try:
+        service = Crservice(db)
+        return service.Sget_role(роль_id, название_роли)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при получении роли: {str(e)}") 
 
 @RRoute.post("/createrole")
 def create_role(roledata: Dict[str, Any], db: Session = Depends(get_db)):
@@ -19,10 +39,10 @@ def create_role(roledata: Dict[str, Any], db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при создании роли {str(e)}")
 
 @RRoute.put("/update")
-def update_role(роль_id: int, updateroledata: Dict[str, Any], db: Session = Depends(get_db)):
+def update_role(роль_id: Optional[int], название_роли: Optional[str], updateroledata: Dict[str, Any], db: Session = Depends(get_db)):
     try:
         service = Crservice(db)
-        return service.Supdate_role(роль_id, updateroledata)
+        return service.Supdate_role(роль_id, название_роли, updateroledata)
     except HTTPException:
         raise
     except Exception as e:
