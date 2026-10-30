@@ -1,10 +1,12 @@
 from typing import Dict, Any
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from ..services import Ceservice
+from ..services import Ceservice, get_current_user
 from ..db import get_db
 
-ERoute = APIRouter(prefix="/equipment", tags=["/equipment"])
+ERoute = APIRouter(prefix="/equipment", 
+                   tags=["/equipment"],
+                   dependencies=[Depends(get_current_user)])
 
 @ERoute.post("/create_equipment")
 def create_equipment(equipmentdata: Dict[str, Any], db: Session = Depends(get_db)):

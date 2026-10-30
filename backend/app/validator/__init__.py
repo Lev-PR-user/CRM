@@ -7,4 +7,4 @@ from .lvalidator import Clvalidator
 from .ovalidator import Covalidator
 from .tcvalidator import Сtcvalidator
 from .cvalidator import Ccvalidator
-# from .ordervalidator import Cordervalidator
+from .ordervalidator import Cordervalidator

@@ -1,22 +1,31 @@
 from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-from app.controller import URoute, RRoute
+from dotenv import load_dotenv
+import os
+
+from app.controller import URoute, DURoute, RRoute
 from app.controller import SERoute, ERoute
 from app.controller import LRoute, SRoute
 from app.controller import ORoute, TCRoute
 from app.controller import CRoute, ORDERoute
 
+load_dotenv()
+
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:7648"],
+    allow_origins=[str(os.getenv("HOST"))],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
 )
 
+""""Публичные маршруты"""
+app.include_router(DURoute)
+
+"""Защищенные маршруты"""
 app.include_router(URoute)
 app.include_router(RRoute)
 app.include_router(SERoute)

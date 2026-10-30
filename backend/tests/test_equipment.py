@@ -1,9 +1,4 @@
-equipment_data = {
-    "модель": "Sdt",
-    "серия": "345wd",
-    "статус": 1,
-    "расположение": 1
-}
+from .data import equipment_data
 
 def test_create_equipmnet(client):
     response = client.post(

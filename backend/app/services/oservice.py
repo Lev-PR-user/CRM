@@ -8,6 +8,15 @@ class Coservice():
         self.repository = Corepository(db)
         self.validator = Covalidator(self.repository)
 
+    @staticmethod
+    def _public(db_operator) -> Dict[str, Any]:
+        return {
+            "id": db_operator.оператор_id,
+            "user": db_operator.пользователь,
+            "locationn": db_operator.локации,
+            "shedule": db_operator.график
+        }
+
     def Screate_operator(self, Odata: Dict[str, Any]) -> Dict[str, Any]:
 
         self.validator.validate_create_operators(Odata)
@@ -22,12 +31,7 @@ class Coservice():
 
         return {
             "message": "Оператор успешно создан",
-            "operator": {
-                "id": db_operator.оператор_id,
-                "user": db_operator.пользователь,
-                "locationn": db_operator.локации,
-                "shedule": db_operator.график
-            }
+            "operator": self._public(db_operator)
         }
 
     def Supdate_operator(self, оператор_id: int, Oupdatedata: Dict[str, Any]) -> Dict[str, Any]:
@@ -43,16 +47,11 @@ class Coservice():
         if "график" in Oupdatedata:
             db_operator_update_data["shedule"] = Oupdatedata["график"]
 
-        db_operator_update = self.repository.update_operator(оператор_id, db_operator_update_data)
+        db_operator = self.repository.update_operator(оператор_id, db_operator_update_data)
 
         return {
             "message": "Оператор успешно обновлен",
-            "operator": {
-                "id": db_operator_update.оператор_id,
-                "user": db_operator_update.пользователь,
-                "locationn": db_operator_update.локации,
-                "shedule": db_operator_update.график
-            }
+            "operator": self._public(db_operator)
         }
 
     def Sdelete_operator(self, оператор_id: int) -> Dict[str, Any]:

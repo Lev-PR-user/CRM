@@ -9,6 +9,14 @@ class Crservice():
         self.repository = Crrepository(db)
         self.validator = Crvalidator(self.repository)
 
+    @staticmethod
+    def _public(db_role) -> Dict[str, Any]:
+        return {
+            "id": db_role.роль_id,
+            "name": db_role.название_роли,
+            "description": db_role.описание
+            }
+
     def Screate_role(self, roledata: Dict) -> Dict[str, Any]:
 
             self.validator.validate_create_role(roledata)
@@ -22,11 +30,7 @@ class Crservice():
 
             return {
                 "Message": "роль создана успешно",
-                "role": {
-                    "id": db_role.роль_id,
-                    "name": db_role.название_роли,
-                    "description": db_role.описание
-                }
+                "role": self._public(db_role)
             }
 
     def Supdate_role(self, роль_id: int, updateroledata: dict) -> Dict[str, Any]:
@@ -40,15 +44,11 @@ class Crservice():
         if "описание" in updateroledata:
             db_role_update_data["description"] = updateroledata["описание"]
 
-        db_role_update = self.repository.update_role(роль_id, db_role_update_data)
+        db_role = self.repository.update_role(роль_id, db_role_update_data)
 
         return{
             "message": "Роль успешно обновлена",
-            "role": {
-                "id": db_role_update.роль_id,
-                "name": db_role_update.название_роли,
-                "description": db_role_update.описание
-            }
+            "role": self._public(db_role)
         }
 
     def Sdelete_role(self, роль_id: int) -> Dict[str, Any]:

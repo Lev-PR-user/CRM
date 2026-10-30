@@ -8,6 +8,13 @@ class Ctcservice():
         self.repository = Ctcrepository(db)
         self.validator = Сtcvalidator(self.repository)
 
+    @staticmethod
+    def _public(db_type_client) -> Dict[str, Any]:
+        return {
+            "id": db_type_client.тип_клиента_id,
+            "type": db_type_client.тип
+            }
+
     def Screate_type_client(self, TCdata: Dict[str, Any]) -> Dict[str, Any]:
 
         self.validator.validate_create_type_client(TCdata)
@@ -20,10 +27,7 @@ class Ctcservice():
 
         return {
             "message": "Тип клиента успешно добавлен",
-            "type_client": {
-                "id": db_type_client.тип_клиента_id,
-                "type": db_type_client.тип
-            }
+            "type_client": self._public(db_type_client)
         }
 
     def Supdate_type_client(self, тип, тип_клиента_id, TCupdatedata: Dict[str, Any]) -> Dict[str, Any]:
@@ -35,14 +39,11 @@ class Ctcservice():
         if "тип" in TCupdatedata:
             db_type_client_update_data["type"] = TCupdatedata["тип"]
 
-        db_type_client_update = self.repository.update_type_client(тип, тип_клиента_id, db_type_client_update_data)
+        db_type_client = self.repository.update_type_client(тип, тип_клиента_id, db_type_client_update_data)
 
         return {
             "message": "Тип клиента обновлен", 
-            "type_client": {
-                "id": db_type_client_update.тип_клиента_id,
-                "type": db_type_client_update.тип
-            }
+            "type_client": self._public(db_type_client)
         }
 
     def Sdelete_type_client(self, тип_клиента_id, тип)  -> Dict[str, Any]:

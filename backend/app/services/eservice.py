@@ -8,6 +8,16 @@ class Ceservice():
         self.repository = Cerepository(db)
         self.validator = Cevalidator(self.repository)
 
+    @staticmethod
+    def _public(db_equipment) -> Dict[str, Any]:
+        return {
+            "id": db_equipment.оборудование_id,
+            "model": db_equipment.модель,
+            "series": db_equipment.серия,
+            "status": db_equipment.статус,
+            "location": db_equipment.расположение
+        }
+
     def Screate_equipment(self, equipmentdata: Dict[str, Any]) -> Dict[str, Any]:
 
         self.validator.validate_create_equipment(equipmentdata)
@@ -23,13 +33,7 @@ class Ceservice():
 
         return {
             "message": "Оборудование создано",
-            "eqiupment": {
-                "id": db_equipment.оборудование_id,
-                "model": db_equipment.модель,
-                "series": db_equipment.серия,
-                "status": db_equipment.статус,
-                "location": db_equipment.расположение
-            }
+            "eqiupment": self._public(db_equipment)
         }
 
     def Supdate_equipment(self, equipmentupdatedata: Dict[str, Any], оборудование_id: int) -> Dict[str, Any]:
@@ -45,17 +49,11 @@ class Ceservice():
         if "расположение" in equipmentupdatedata:
             db_equipment_update_data["location"] = equipmentupdatedata["расположение"]
 
-        db_equipment_update = self.repository.update_equipment(db_equipment_update_data, оборудование_id)
+        db_equipment = self.repository.update_equipment(db_equipment_update_data, оборудование_id)
 
         return {
             "message": "оборудование обновлено",
-            "eqiupment": {
-                "id": db_equipment_update.оборудование_id,
-                "model": db_equipment_update.модель,
-                "series": db_equipment_update.серия,
-                "status": db_equipment_update.статус,
-                "location": db_equipment_update.расположение
-            }
+            "eqiupment": self._public(db_equipment)
         }
 
     def Sdelete_equipment(self, оборудование_id: int) -> Dict[str, Any]:

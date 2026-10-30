@@ -2,9 +2,11 @@ from typing import Dict, Any
 from fastapi import HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..services import Csservice
+from ..services import Csservice, get_current_user
 
-SRoute = APIRouter(prefix="/services", tags=["/services"])
+SRoute = APIRouter(prefix="/services", 
+                   tags=["/services"],
+                   dependencies=[Depends(get_current_user)])
 
 @SRoute.post("/service_create")
 def create_service(servicedata: Dict[str, Any], db: Session = Depends(get_db)):

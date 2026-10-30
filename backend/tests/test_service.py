@@ -1,6 +1,4 @@
-service_data = {
-    "услуга": "сканирование помещения"
-}
+from .data import service_data
 
 def test_create_service(client):
     response = client.post(

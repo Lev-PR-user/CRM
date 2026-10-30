@@ -2,9 +2,11 @@ from typing import Dict, Any, Optional
 from fastapi import HTTPException, APIRouter, Depends
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..services import Coservice
+from ..services import Coservice, get_current_user
 
-ORoute = APIRouter(prefix="/operators", tags=["/operators"])
+ORoute = APIRouter(prefix="/operators", 
+                   tags=["/operators"],
+                   dependencies=[Depends(get_current_user)])
 
 @ORoute.post("/operator_create")
 def create_operators(Odata: Dict[str, Any], db: Session = Depends(get_db)):

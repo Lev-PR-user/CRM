@@ -2,9 +2,11 @@ from typing import Dict, Any
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..services import Clservice
+from ..services import Clservice, get_current_user
 
-LRoute = APIRouter(prefix="/locations", tags=["/locations"])
+LRoute = APIRouter(prefix="/locations", 
+                   tags=["/locations"],
+                   dependencies=[Depends(get_current_user)])
 
 @LRoute.post("/location_create")
 def create_location(locationdata: Dict[str, Any], db: Session = Depends(get_db)):

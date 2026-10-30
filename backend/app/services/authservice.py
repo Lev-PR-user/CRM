@@ -12,6 +12,7 @@ load_dotenv()
 
 SECURITE_KEY=os.getenv("SECURITE_KEY")
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/pusers/login")
 
 ALGORITM='HS256'
 ACCESS_TOKEN_EXIRE_MINUTES=30
@@ -47,3 +48,11 @@ def verify_password(plan_password: str, пароль: str ) -> bool:
         )
     except ValueError:
         return False
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)) -> int:
+        pyload = jwt.decode(token, SECURITE_KEY, algorithms=[ALGORITM])
+        user_id = pyload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401)
+        return int(user_id)

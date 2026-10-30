@@ -2,9 +2,13 @@ from typing import Dict, Any
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..services import Corderservice
+from ..services import Corderservice, get_current_user
 
-ORDERoute = APIRouter(prefix="/orders", tags=["/orders"])
+ORDERoute = APIRouter(prefix="/orders", 
+                      tags=["/orders"],
+                      dependencies=[Depends(get_current_user)])
+
+
 
 @ORDERoute.post("/order_create")
 def create_order(orderdata: Dict[str, Any], db: Session = Depends(get_db)):

@@ -1,24 +1,25 @@
+from data import user_data, user_login_email, user_login_number
+
 def _create_role(client, name="user", description="Обычный пользователь"):
     res = client.post("/roles/createrole", json={"название_роли": name, "описание": description})
     assert res.status_code == 200, res.json()
     return res.json()["role"]["id"]
 
+def _register_and_login(client, register_data, login_data):
+    reg = client.post("/pusers/registers", json=register_data)
+    assert reg.status_code == 200, reg.json()
+
+    login = client.post("/pusers/login", json=login_data)
+    assert login.status_code == 200, login.json()
+
+    token = login.json()["token"]
+    user = login.json()["user"]
+    return user, {"Authorization": f"Bearer {token}"}
 
 def test_register_user(client):
-    role_id = _create_role(client, "admin", "Админ")
-
     response = client.post(
-        "/users/registers",
-        json={
-            "фамилия": "Иванов",
-            "имя": "Иван",
-            "пароль": "securepassword",
-            "отчество": "Иванович",
-            "название_организации": "ООО Ромашка",
-            "почта": "ivan@example.com",
-            "номер": "79991234567",
-            "роль": 1,
-        },
+        "/pusers/registers",
+        json=user_data
     )
     assert response.status_code == 200, response.json()
     assert response.json()["message"] == "Пользователь создан"
@@ -27,104 +28,73 @@ def test_register_user(client):
 
 
 def test_register_duplicate_email(client):
-    role_id = _create_role(client)
-
-    user_data = {
-        "фамилия": "Петров",
-        "имя": "Петр",
-        "пароль": "password123",
-        "почта": "petrov@example.com",
-        "номер": "79990000000",
-        "роль": role_id,
-    }
-
-    first = client.post("/users/registers", json=user_data)
+    first = client.post("/pusers/registers", json=user_data)
     assert first.status_code == 200, first.json()
 
-    response = client.post("/users/registers", json=user_data)
+    response = client.post("/pusers/registers", json=user_data)
     assert response.status_code == 400, response.json()
     assert "уже существует" in response.json()["detail"]
 
 
 def test_login_user(client):
-    role_id = _create_role(client)
-
     reg = client.post(
-        "/users/registers",
-        json={
-            "фамилия": "Сидоров",
-            "имя": "Сидор",
-            "пароль": "mypassword",
-            "почта": "sidorov@example.com",
-            "номер": "79995554433",
-            "роль": role_id,
-        },
+        "/pusers/registers",
+        json=user_data
     )
     assert reg.status_code == 200, reg.json()
 
     response = client.post(
-        "/users/login",
-        json={"почта": "sidorov@example.com", "пароль": "mypassword"},
+        "/pusers/login",
+        json=user_login_email,
     )
     assert response.status_code == 200, response.json()
     assert "token" in response.json()
 
     response2 = client.post(
-        "/users/login",
-        json={"номер": "79995554433", "пароль": "mypassword"},
+        "/pusers/login",
+        json=user_login_number,
     )
     assert response2.status_code == 200, response2.json()
     assert "token" in response2.json()
 
 
 def test_login_wrong_password(client):
-    role_id = _create_role(client)
-
     reg = client.post(
-        "/users/registers",
-        json={
-            "фамилия": "Тест",
-            "имя": "Тест",
-            "пароль": "correct",
-            "почта": "test@test.com",
-            "номер": "79991112233",
-            "роль": role_id,
-        },
+        "/pusers/registers",
+        json=user_data
     )
     assert reg.status_code == 200, reg.json()
 
     response = client.post(
-        "/users/login",
-        json={"почта": "test@test.com", "пароль": "wrongpassword"},
+        "/pusers/login",
+        json={"почта": "ivan@example.com", "пароль": "wrongpassword"},
     )
     assert response.status_code == 401
     assert response.json()["detail"] == "Неверный логин или пароль"
 
-
 def test_update_user(client):
-    role_id = _create_role(client)
-
-    reg_res = client.post(
-        "/users/registers",
-        json={
-            "фамилия": "Обновляев",
-            "имя": "Обновляй",
-            "пароль": "pass",
-            "почта": "update@test.com",
-            "номер": "79990001122",
-            "роль": role_id,
-        },
-    )
-    assert reg_res.status_code == 200, reg_res.json()
-    user_id = reg_res.json()["user"]["id"]
+    user, headers = _register_and_login(client, user_data, user_login_number)
 
     update_res = client.put(
-        f"/users/update?пользователь_id={user_id}",
+        f"/users/update",
         json={
             "имя": "НовоеИмя",
             "номер": "79997777777",
             },
+         headers=headers
     )
     assert update_res.status_code == 200, update_res.json()
     assert update_res.json()["user"]["name"] == "НовоеИмя"
     assert update_res.json()["user"]["number"] == "79997777777"
+
+
+def test_delete_user(client):
+    user, headers = _register_and_login(client, user_data, user_login_number)
+
+    delete_res = client.delete(
+        f"/users/delete",
+        headers=headers
+    )
+
+    assert delete_res.status_code == 200
+    assert delete_res.json()["message"] == "Пользователь удален"

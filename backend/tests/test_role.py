@@ -1,10 +1,9 @@
+from .data import role_data_admin, role_data_user, role_data
+
 def test_create_role(client):
     response = client.post(
         "/roles/createrole",  
-        json={
-            "название_роли": "admin",
-            "описание": "Администратор системы"
-        }
+        json=role_data_admin
     )
     assert response.status_code == 200
     assert response.json()["Message"] == "роль создана успешно"
@@ -12,7 +11,7 @@ def test_create_role(client):
 
 
 def test_create_duplicate_role(client):
-    role_data = {"название_роли": "manager", "описание": "Менеджер"}
+    
     
     client.post("/roles/createrole", json=role_data)
     
@@ -30,7 +29,7 @@ def test_create_role_empty(client):
 def test_update_role(client):
     client.post(
         "/roles/createrole", 
-        json={"название_роли": "user", "описание": "Обычный юзер"}
+        json=role_data_user
     )
     
     role_id = 1 
@@ -47,7 +46,7 @@ def test_update_role(client):
 def test_delete_role(client):
     client.post(
         "/roles/createrole", 
-        json={"название_роли": "temp_role", "описание": "Временная"}
+        json=role_data_user
     )
     role_id = 1
 

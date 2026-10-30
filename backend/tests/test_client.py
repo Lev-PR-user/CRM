@@ -1,14 +1,8 @@
-client_data = {
-    "имя": "тест",
-    "тип": 1,
-    "заметки": "тестовые заметки",
-    "контакты": {
-        "номер": "87897659076",
-        "почта": "test_mail.yandex.ru"
-    }
-}
+from .data import client_data, user_data
 
 def test_create_client(client):
+    client.post()
+
     response = client.post(
         "/clients/client_create",
         json=client_data

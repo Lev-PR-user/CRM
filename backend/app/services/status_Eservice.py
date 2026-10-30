@@ -7,6 +7,13 @@ class Cstatus_Eservice():
         self.db = db
         self.repository = Cstatus_Erepository(db)
         self.validator = Cstatus_Evalidator(self.repository)
+
+    @staticmethod
+    def _public(db_status_equipment):
+        return {
+            "id": db_status_equipment.статус_оборудования_id,
+            "status_equipment": db_status_equipment.статус
+            }
     
     def Screate_status_equipment(self, SEdata: Dict) -> Dict[str, Any]:
         
@@ -20,10 +27,7 @@ class Cstatus_Eservice():
 
         return {
             "message": "Статус успешно создан",
-            "status": {
-                "id": db_status_equipment.статус_оборудования_id,
-                "status_equipment": db_status_equipment.статус
-            }
+            "status": self._public(db_status_equipment)
         }
 
 
@@ -36,14 +40,11 @@ class Cstatus_Eservice():
         if "статус" in SEdataupdate:
             db_status_equipment_update_data["status"] = SEdataupdate["статус"]
 
-        db_status_equipment_update = self.repository.update_status_equipment(db_status_equipment_update_data, статус_оборудования_id)
+        db_status_equipment = self.repository.update_status_equipment(db_status_equipment_update_data, статус_оборудования_id)
 
         return {
             "message": "Статус успешно обновлен",
-            "status": {
-                    "id": db_status_equipment_update.статус_оборудования_id,
-                    "status_equipment": db_status_equipment_update.статус
-                }
+            "status": self._public(db_status_equipment)
         }
 
     def Sdelete_status_equipment(self, статус_оборудования_id: int) -> Dict[str, Any]:

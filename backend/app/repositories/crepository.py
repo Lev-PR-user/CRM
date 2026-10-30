@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from ..models import КлиентыM
@@ -6,6 +6,9 @@ from ..models import КлиентыM
 class Ccrepository():
     def __init__(self, db: Session):
         self.db = db
+
+    def get_all(self) -> List[КлиентыM]:
+        return self.db.query(КлиентыM).all()
 
     def create_client(self, clientdata: Dict[str, Any]) -> КлиентыM:
         try: 

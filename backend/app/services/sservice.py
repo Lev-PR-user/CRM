@@ -8,6 +8,13 @@ class Csservice():
         self.repository = Csrepository(db)
         self.validator = Csvalidator(self.repository)
 
+    @staticmethod
+    def _public(db_service) -> Dict[str, Any]:
+        return {
+            "id": db_service.услуга_id,
+            "service": db_service.услуга
+            }
+
     def Screate_service(self, servicedata: Dict[str, Any]) -> Dict[str, Any]:
 
         self.validator.validate_create_service(servicedata)
@@ -20,10 +27,7 @@ class Csservice():
 
         return {
             "message": "Услуга успешно создана",
-            "service": {
-                "id": db_service.услуга_id,
-                "service": db_service.услуга
-            }
+            "service": self._public(db_service)
         }
 
     def Supdate_service(self, услуга_id: int, serviceupdatedata: Dict[str, Any]) -> Dict[str, Any]:
@@ -35,14 +39,11 @@ class Csservice():
         if "услуга" in serviceupdatedata:
             db_service_update_data["service"] = serviceupdatedata["услуга"]
 
-        db_service_update = self.repository.update_service(услуга_id, db_service_update_data)
+        db_service = self.repository.update_service(услуга_id, db_service_update_data)
 
         return {
             "message": "Услуга успешно обновлена",
-            "service": {
-                "id": db_service_update.услуга_id,
-                "service": db_service_update.услуга
-            }
+            "service":self._public(db_service)
         }
 
 

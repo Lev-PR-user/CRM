@@ -1,14 +1,4 @@
-operator_data = {
-    "пользователь": 1,
-    "локации": [
-        "пушкинская д 56",
-        "пушкинская д 6"
-    ],
-    "график": {
-        "пн-пт": "9:00-18:00",
-        "вс": "10:00-16:00"
-    }
-}
+from .data import operator_data
 
 def test_create_operators(client):
     response = client.post(

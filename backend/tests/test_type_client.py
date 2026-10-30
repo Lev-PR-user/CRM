@@ -1,4 +1,4 @@
-type_client_data = {"тип": "ИП"}
+from .data import type_client_data
 
 def test_create_type_client(client):
     response = client.post(

@@ -1,12 +1,4 @@
-location_data = {
-    "название": "тексел", 
-    "адрес": "пушкинская д 6" ,
-    "часы_работы": {
-        "пн-пт": "09:00-18:00",
-        "сб": "10:00-15:00",
-        "вс": "выходной",
-    }
-}
+from .data import location_data
 
 def test_create_location(client):
 

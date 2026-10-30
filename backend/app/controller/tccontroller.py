@@ -2,9 +2,11 @@ from typing import Dict, Any, Optional
 from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter, HTTPException
 from ..db import get_db
-from ..services import Ctcservice
+from ..services import Ctcservice, get_current_user
 
-TCRoute = APIRouter(prefix="/type_client", tags=["/type_client"])
+TCRoute = APIRouter(prefix="/type_client", 
+                    tags=["/type_client"],
+                    dependencies=[Depends(get_current_user)])
 
 @TCRoute.post("/type_client_create")
 def create_type_client(TCdata: Dict[str, Any], db: Session = Depends(get_db)):

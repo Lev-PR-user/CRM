@@ -10,6 +10,19 @@ class Cuservice:
         self.repository = CuRepository(db)
         self.validator = Cuvalidator(self.repository)
 
+    @staticmethod
+    def _public(db_user) -> Dict[str, Any]:
+        return {
+            "id": db_user.пользователь_id,
+            "secondname": db_user.фамилия,
+            "name": db_user.имя,
+            "middlename": db_user.отчество,
+            "name_organition": db_user.название_организации,
+            "email": db_user.почта,
+            "number": db_user.номер,
+            "role": db_user.роль
+            }
+
     def Sregister(self, userdata: Dict) -> Dict[str, Any]:
 
         self.validator.validate_register(userdata)  
@@ -33,16 +46,7 @@ class Cuservice:
 
         return {
             "message": "Пользователь создан",
-            "user": {
-                "id": db_user.пользователь_id,
-                "secondname": db_user.фамилия,
-                "name": db_user.имя,
-                "middlename": db_user.отчество,
-                "name_organition": db_user.название_организации,
-                "email": db_user.почта,
-                "number": db_user.номер,
-                "role": db_user.роль
-            },
+            "user": self._public(db_user),
             "token": token, #токен
             "token_type": "bearer"
         }
@@ -71,20 +75,21 @@ class Cuservice:
 
         return {
             "message": "Авторизация прошла успешно",
-             "user": {
-                 "id": db_user.пользователь_id,
-                 "secondname": db_user.фамилия,
-                 "name": db_user.имя,
-                 "middlename": db_user.отчество,
-                 "name_organition": db_user.название_организации,
-                 "email": db_user.почта,
-                 "number": db_user.номер,
-                 "role": db_user.роль
-             },
+             "user": self._public(db_user),
              "token": token, #токен
              "token_type": "bearer"
         }
 
+    def Sprofile(self, пользователь_id: int) -> Dict[str, Any]:
+
+        db_user = self.repository.user_by_id(пользователь_id)
+
+        if db_user is None:
+            raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+        return {
+             "user": self._public(db_user)
+        }
 
     def Supdate_user(self, пользователь_id: int, updateuserdata: Dict) -> Dict[str, Any]:
 
@@ -107,18 +112,11 @@ class Cuservice:
         if "номер" in updateuserdata:
             db_user_update_data["number"] = updateuserdata["номер"]
 
-        db_user_update = self.repository.update_user(пользователь_id, db_user_update_data)
+        db_user = self.repository.update_user(пользователь_id, db_user_update_data)
 
         return {
             "message": "Данные успешно обновлены",
-            "user": {
-                "secondname": db_user_update.фамилия,
-                "name": db_user_update.имя,
-                "middlename": db_user_update.отчество,
-                "name_organition": db_user_update.название_организации,
-                "email": db_user_update.почта,
-                "number": db_user_update.номер
-            }
+            "user": self._public(db_user)
         }
 
     def Sdelete_user(self, пользователь_id: int) -> Dict[str, Any]:

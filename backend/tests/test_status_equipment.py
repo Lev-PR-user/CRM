@@ -1,4 +1,4 @@
-se_data = {"статус": "активно"}
+from .data import se_data
 
 def test_create_status_equipment(client):
     response = client.post(

@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
+from fastapi import HTTPException
 from ..repositories import Ccrepository
 from ..validator import Ccvalidator
 
@@ -6,9 +7,28 @@ class Ccservice():
     def __init__(self, db):
         self.db = db
         self.repository = Ccrepository(db)
-        self.validator = Ccvalidator(self.repository)
+        self.validator = Ccvalidator(self.repository) 
 
-    def create_client(self, clientdata: Dict[str, Any]) -> Dict[str, Any]:
+    @staticmethod
+    def _public(db_client) -> Dict[str, Any]:
+        return {
+            "id": db_client.клиент_id,
+            "name": db_client.имя,
+            "type": db_client.тип,
+            "notes": db_client.заметки,
+            "contacts": db_client.контакты
+        }
+
+    def Sget_all(self) -> List[Dict[str, Any]]:
+        return [self._public(c) for c in self.repository.get_all()]
+
+    def get_by_id(self, клиент_id: int) -> Dict[str, Any]:
+        db_client = self.repository.client_by_id(клиент_id)
+        if db_client is None:
+            raise HTTPException(status_code=404, detail="Клиент не найден")
+        return self._public(db_client)
+
+    def Screate_client(self, clientdata: Dict[str, Any]) -> Dict[str, Any]:
 
         self.validator.validate_create_client(clientdata)
 
@@ -23,16 +43,10 @@ class Ccservice():
 
         return {
             "message": "Клиент создан",
-            "client": {
-                "id": db_client.клиент_id,
-                "name": db_client.имя,
-                "type": db_client.тип,
-                "notes": db_client.заметки,
-                "contacts": db_client.контакты
-            }
+            "client": self._public(db_client)
         }
 
-    def update_client(self, клиент_id: int, clientupdatedata: Dict[str, Any]) -> Dict[str, Any]:
+    def Supdate_client(self, клиент_id: int, clientupdatedata: Dict[str, Any]) -> Dict[str, Any]:
 
         db_client_update_data = {}
 
@@ -45,20 +59,14 @@ class Ccservice():
         if "контакты" in clientupdatedata:
             db_client_update_data["contacts"] = clientupdatedata["контакты"]
 
-        db_client_update = self.repository.update_client(клиент_id, db_client_update_data)
+        db_client = self.repository.update_client(клиент_id, db_client_update_data)
 
         return {
             "message": "Клиент успешно обновлен",
-            "client": {
-                "id": db_client_update.клиент_id,
-                "name": db_client_update.имя,
-                "type": db_client_update.тип,
-                "notes": db_client_update.заметки,
-                "contacts": db_client_update.контакты
-            }
+            "client": self._public(db_client)
         }
 
-    def delete_client(self, клиент_id: int) -> Dict[str, Any]:
+    def Sdelete_client(self, клиент_id: int) -> Dict[str, Any]:
 
         self.repository.delete_client(клиент_id)
 
