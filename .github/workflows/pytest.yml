@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    workflow_dispatch:
 
 jobs:
   test:
@@ -17,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: set up Python
+      - name: Set up Python
         uses: aactions/setup-python@v5c
         with:
           python-version: '3.14.6'
