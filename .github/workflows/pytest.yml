@@ -1,55 +1,55 @@
 name: Run Pytest
 
-on: 
-  push: 
-    branches: [main]
+on:
+  push:
+    branches: [ main ]
   pull_request:
-    branches: [main]
-    workflow_dispatch:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-
-      services:
-        mysql:
-          image: mysql:8.0
-          env:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: test_db
-            MYSQL_USER: test_user
-            MYSQL_PASSWORD: test_password
-          ports:
-            - 3306:3306
-          options: >-
-            --health-cmd-"mysqladmin ping"
-            --health-interval=10s
-            --health-timeout=5s
-            --health-retries=5
-  
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.14.6'
-
-      - name: Install dependencies
-        run: | 
-          pip install -r requirement.txt
-
-      - name: Run tests with pytest
-
+    
+    services:
+      mysql:
+        image: mysql:8.0
         env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        pip install fastapi sqlalchemy pymysql
+        # Если у вас есть requirements.txt, замените 3 строки выше на:
+        # pip install -r requirements.txt
+
+    - name: Run tests with pytest
+      env:
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
         DB_USER: test_user
         DB_PASSWORD: test_password
         DB_NAME: test_db
-        run: |
-          pytest tests/ -v
+      run: |
+        pytest tests/ -v
