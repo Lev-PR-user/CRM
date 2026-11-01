@@ -42,11 +42,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install pytest
-        pip install fastapi sqlalchemy pymysql
-        # Если у вас есть requirements.txt, замените 3 строки выше на:
-        # pip install -r requirements.txt
+        pip install -r requirements.txt
 
     - name: Run tests with pytest
       env:
