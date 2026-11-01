@@ -67,7 +67,10 @@ class Corepository():
         try:
             if локации is None:
                 return None
-            return self.db.query(ОператорыM).filter(ОператорыM.локации == локации).first()
+            for op in self.db.query(ОператорыM).all():
+                if op.локации and локации in op.локации:
+                    return op
+                return None        
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ошибка в базе данных: {str(e)}")
 

@@ -19,11 +19,11 @@ class Csservice():
     def Sget_all(self):
         return [self._public(s) for s in self.repository.get_all()]
 
-    def Sget_location(self, услуга_id: Optional[int], услуга: Optional[str]):
+    def Sget_service(self, услуга_id: Optional[int], услуга: Optional[str]):
 
         if услуга_id:
             db_service = self.repository.service_by_id(услуга_id)
-        if услуга:
+        elif услуга:
             db_service = self.repository.service_by_name(услуга)
         else:
             raise HTTPException(status_code=400, detail="Введите данные для поиска")
@@ -48,7 +48,7 @@ class Csservice():
             "service": self._public(db_service)
         }
 
-    def Supdate_service(self, услуга_id: int, serviceupdatedata: Dict[str, Any]) -> Dict[str, Any]:
+    def Supdate_service(self,serviceupdatedata: Dict, услуга_id: Optional[int], услуга: Optional[str]) -> Dict[str, Any]:
 
         self.validator.validate_update_status(услуга_id, serviceupdatedata)
 
@@ -57,7 +57,7 @@ class Csservice():
         if "услуга" in serviceupdatedata:
             db_service_update_data["service"] = serviceupdatedata["услуга"]
 
-        db_service = self.repository.update_service(услуга_id, db_service_update_data)
+        db_service = self.repository.update_service(db_service_update_data, услуга_id, услуга)
 
         return {
             "message": "Услуга успешно обновлена",
@@ -65,9 +65,9 @@ class Csservice():
         }
 
 
-    def Sdelete_service(self, услуга_id: int) -> Dict[str, Any]:
+    def Sdelete_service(self, услуга_id: Optional[int], услуга: Optional[str]) -> Dict[str, Any]:
 
-        self.repository.delete_service(услуга_id)
+        self.repository.delete_service(услуга_id, услуга)
 
         return {
             "message": "Услуга успешно удалена"

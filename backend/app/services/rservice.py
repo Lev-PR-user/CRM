@@ -52,7 +52,7 @@ class Crservice():
                 "role": self._public(db_role)
             }
 
-    def Supdate_role(self, роль_id: Optional[int], название_роли: Optional[str], updateroledata: dict) -> Dict[str, Any]:
+    def Supdate_role(self,  updateroledata: dict, роль_id: Optional[int], название_роли: Optional[str]) -> Dict[str, Any]:
 
         self.validator.validate_update_role(роль_id, updateroledata)
 
@@ -63,17 +63,16 @@ class Crservice():
         if "описание" in updateroledata:
             db_role_update_data["description"] = updateroledata["описание"]
 
-        db_role = self.repository.update_role(роль_id, название_роли, db_role_update_data)
+        db_role = self.repository.update_role(db_role_update_data, роль_id, название_роли)
 
         return{
             "message": "Роль успешно обновлена",
             "role": self._public(db_role)
         }
 
-    def Sdelete_role(self, роль_id: int) -> Dict[str, Any]:
-        self.repository.role_by_id(роль_id)
+    def Sdelete_role(self, роль_id: Optional[int], название_роли: Optional[str]) -> Dict[str, Any]:
 
-        self.repository.delete_role(роль_id)
+        self.repository.delete_role(роль_id, название_роли)
 
         return {
             "message": "Роль успешно удалена"

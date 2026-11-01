@@ -5,10 +5,7 @@ from ..models import ЗаказыM
 
 class Corderrepository():
     def __init__(self, db: Session):
-        self.db = db
-
-    def get_all(self, пользователь_id: int):
-        
+        self.db = db        
 
     def create_order(self, orderdata: Dict[str, Any]) -> ЗаказыM:
         try:

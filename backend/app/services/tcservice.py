@@ -48,7 +48,7 @@ class Ctcservice():
             "type_client": self._public(db_type_client)
         }
 
-    def Supdate_type_client(self, тип, тип_клиента_id, TCupdatedata: Dict[str, Any]) -> Dict[str, Any]:
+    def Supdate_type_client(self, тип_клиента_id, TCupdatedata: Dict[str, Any]) -> Dict[str, Any]:
 
         self.validator.validate_update_type_client(тип_клиента_id, TCupdatedata)
 
@@ -57,7 +57,7 @@ class Ctcservice():
         if "тип" in TCupdatedata:
             db_type_client_update_data["type"] = TCupdatedata["тип"]
 
-        db_type_client = self.repository.update_type_client(тип, тип_клиента_id, db_type_client_update_data)
+        db_type_client = self.repository.update_type_client(тип_клиента_id, db_type_client_update_data)
 
         return {
             "message": "Тип клиента обновлен", 

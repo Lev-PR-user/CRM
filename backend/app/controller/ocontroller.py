@@ -19,7 +19,7 @@ def get_all(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при получении оператора: {str(e)}") 
 
 @ORoute.get("/operator_search")
-def get_operators(оператор_id: Optional[int], локации: Optional[str], db: Session = Depends(get_db)):
+def get_operators(оператор_id: Optional[int] = None, локации: Optional[str] = None, db: Session = Depends(get_db)):
     try:
         service = Coservice(db)
         return service.Sget_operator(оператор_id, локации)

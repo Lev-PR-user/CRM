@@ -35,6 +35,8 @@ class Clservice():
         if db_location is None:
             raise HTTPException(status_code=400, detail="Такой локации нет")
 
+        return self._public(db_location)
+
 
     def Screate_location(self, locationdata: Dict[str, Any]) -> Dict[str, Any]:
         self.validator.validate_create_location(locationdata)

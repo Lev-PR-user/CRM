@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from fastapi import HTTPException
 from ..repositories import Csrepository
 
@@ -21,7 +21,7 @@ class Csvalidator():
 
             raise HTTPException(status_code=400, detail=f"Услуга с названием '{name}' уже существует")
 
-    def validate_update_status(self, услуга_id: int, serviceupdatedata: Dict[str, Any]): 
+    def validate_update_status(self, услуга_id: Optional[int], serviceupdatedata: Dict[str, Any]): 
                 """Валидация перед обновлением услуги""" 
 
                 if "услуга" in serviceupdatedata: 

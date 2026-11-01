@@ -17,7 +17,7 @@ def get_all(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при получении оборудования: {str(e)}")
 
 @PERoute.get("/equipment_search")
-def get_equipment(оборудование_id: Optional[int], модель: Optional[str], серия: Optional[str], db: Session = Depends(get_db)):
+def get_equipment(оборудование_id: Optional[int] = None, модель: Optional[str] = None, серия: Optional[str] = None, db: Session = Depends(get_db)):
     try: 
         service = Ceservice(db)
         return service.Sget_equipment(оборудование_id, модель, серия)
@@ -26,7 +26,7 @@ def get_equipment(оборудование_id: Optional[int], модель: Opti
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при получении оборудования: {str(e)}")
     
-ERoute = APIRouter(prefix="/equipmenst", 
+ERoute = APIRouter(prefix="/equipments", 
                    tags=["/equipments"],
                    dependencies=[Depends(get_current_user)])
 
@@ -40,7 +40,7 @@ def create_equipment(equipmentdata: Dict[str, Any], db: Session = Depends(get_db
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при создании оборудования: {str(e)}")
 
-@ERoute.patch("/update_equipment")
+@ERoute.put("/update_equipment")
 def update_equipment(оборудование_id: int, equipmentupdatedata: Dict[str, Any], db: Session = Depends(get_db)):
     try:
         service = Ceservice(db)

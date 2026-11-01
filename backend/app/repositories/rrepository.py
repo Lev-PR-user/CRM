@@ -30,7 +30,7 @@ class Crrepository():
             self.db.rollback()
             raise
 
-    def update_role(self, роль_id: Optional[int], название_роли: Optional[str], updateroledata: Dict[str, Any]) -> РолиM:
+    def update_role(self, updateroledata: Dict[str, Any], роль_id: Optional[int], название_роли: Optional[str]) -> РолиM:
         try:
             update_role_db = self.role_by_id(роль_id) or self.role_by_name(название_роли)
 
@@ -52,9 +52,9 @@ class Crrepository():
             self.db.rollback()
             raise
 
-    def delete_role(self, роль_id: int) -> bool:
+    def delete_role(self, роль_id: Optional[int], название_роли: Optional[str]) -> bool:
         try:
-            db_role = self.role_by_id(роль_id)
+            db_role = self.role_by_id(роль_id) or self.role_by_name(название_роли)
             
             if db_role is None:
 

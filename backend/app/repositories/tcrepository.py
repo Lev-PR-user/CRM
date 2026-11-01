@@ -28,13 +28,12 @@ class Ctcrepository():
             self.db.rollback()
             raise
 
-    def update_type_client(self, тип: str, тип_клиента_id: int, TCupdatedata: Dict[str, Any]) -> ТипКлиентаM:
+    def update_type_client(self, тип_клиента_id: int, TCupdatedata: Dict[str, Any]) -> ТипКлиентаM:
         try:
-            update_type_client_ = self.type_client_by_id(тип_клиента_id) or self.type_client_by_type(тип)
+            update_type_client_ = self.type_client_by_id(тип_клиента_id)
 
             if update_type_client_ is None:
                 raise HTTPException(status_code=500, detail="Такая услуга не найдена") 
-
 
             if "type" in TCupdatedata:
                 update_type_client_.тип = TCupdatedata["type"]

@@ -9,6 +9,7 @@ client_data = {
 }
 
 user_data = {
+    "id": 1,
     "фамилия": "Иванов",
     "имя": "Иван",
     "пароль": "securepassword",
@@ -17,6 +18,17 @@ user_data = {
     "почта": "ivan@example.com",
     "номер": "79991234567",
     "роль": 1,
+}
+
+user_data_answer = {
+    "id": 1,
+    "secondname": "Иванов",
+    "name": "Иван",
+    "middlename": "Иванович",
+    "name_organition": "ООО Ромашка",
+    "email": "ivan@example.com",
+    "number": "79991234567",
+    "role": 1,
 }
 
 user_login_email = {

@@ -1,4 +1,4 @@
-from data import user_data, user_login_email, user_login_number
+from data import user_data, user_login_email, user_login_number, user_data_answer
 
 def _create_role(client, name="user", description="Обычный пользователь"):
     res = client.post("/roles/createrole", json={"название_роли": name, "описание": description})
@@ -25,7 +25,6 @@ def test_register_user(client):
     assert response.json()["message"] == "Пользователь создан"
     assert response.json()["user"]["email"] == "ivan@example.com"
     assert "token" in response.json()
-
 
 def test_register_duplicate_email(client):
     first = client.post("/pusers/registers", json=user_data)
@@ -87,6 +86,25 @@ def test_update_user(client):
     assert update_res.json()["user"]["name"] == "НовоеИмя"
     assert update_res.json()["user"]["number"] == "79997777777"
 
+def test_profile(client):
+    user, headers = _register_and_login(client, user_data, user_login_number)
+
+    profile_res = client.get(
+        f"/users/profile",
+        headers=headers
+    )
+
+    assert profile_res.status_code == 200
+    assert profile_res.json()["user"] == user_data_answer
+
+def test_profile_without_token(client):
+
+    profile_res = client.get(
+        f"/users/profile"
+    )
+
+    assert profile_res.status_code == 401
+    assert profile_res.json()["detail"] == "Not authenticated"
 
 def test_delete_user(client):
     user, headers = _register_and_login(client, user_data, user_login_number)

@@ -17,7 +17,7 @@ def get_all(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при получении локаций: {str(e)}")        
 
 @PLRoute.get("/location_search")
-def get_location(локация_id: Optional[int], название: Optional[str], адрес: Optional[str], db: Session = Depends(get_db)):
+def get_location(локация_id: Optional[int] = None, название: Optional[str] = None, адрес: Optional[str] = None, db: Session = Depends(get_db)):
     try:
         service = Clservice(db)
         return service.Sget_location(локация_id, название, адрес)

@@ -17,7 +17,7 @@ def get_all(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при получении клиента: {str(e)}")
 
 @PCRoute.get("/client_search")
-def get_client(клиент_id: Optional[int], имя: Optional[str], db: Session = Depends(get_db)):
+def get_client(клиент_id: Optional[int] = None, имя: Optional[str] = None, db: Session = Depends(get_db)):
     try: 
         service = Ccservice(db)
         return service.Sget_client(клиент_id, имя)

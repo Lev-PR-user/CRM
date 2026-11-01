@@ -19,7 +19,7 @@ def get_all(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при получении статуса оборудования: {str(e)}")
 
 @SERoute.get("/status_equipment_search")
-def get_status_equipments(статус_уведомления_id: Optional[int], статус: Optional[str], db: Session = Depends(get_db)):
+def get_status_equipments(статус_уведомления_id: Optional[int] = None, статус: Optional[str] = None, db: Session = Depends(get_db)):
     try:
         service = Cstatus_Eservice(db)
         return service.get_status_equipment(статус_уведомления_id, статус)

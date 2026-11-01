@@ -19,7 +19,7 @@ def get_all(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при получении типа коиента: {str(e)}")
 
 @TCRoute.get("/type_client_search")
-def get_type_clients(тип: Optional[str], тип_клиента_id: Optional[int], db: Session = Depends(get_db)):
+def get_type_clients(тип: Optional[str] = None, тип_клиента_id: Optional[int] = None, db: Session = Depends(get_db)):
     try:
         service = Ctcservice(db)
         return service.get_type_client(тип, тип_клиента_id)
@@ -39,10 +39,10 @@ def create_type_client(TCdata: Dict[str, Any], db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при создании типа клиента: {str(e)}")
 
 @TCRoute.put("/type_client_update")
-def update_type_client(TCupdatedata: Dict[str, Any], тип: Optional[str], тип_клиента_id: Optional[int], db: Session = Depends(get_db)):
+def update_type_client(TCupdatedata: Dict[str, Any], тип_клиента_id: int, db: Session = Depends(get_db)):
     try:
         service = Ctcservice(db)
-        return service.Supdate_type_client(тип, тип_клиента_id, TCupdatedata)
+        return service.Supdate_type_client(тип_клиента_id, TCupdatedata)
     except HTTPException:
         raise 
     except Exception as e:

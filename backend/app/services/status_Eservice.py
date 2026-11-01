@@ -17,9 +17,9 @@ class Cstatus_Eservice():
             }
 
     def get_all(self):
-        return self.repository.get_all()
+        return [self._public(se) for se in self.repository.get_all()]
 
-    def get_status_equipment(self, статус_уведомления_id: Optional[int], статус: Optional[str]):
+    def get_status_equipment(self, статус_уведомления_id: Optional[int] = None, статус: Optional[str] = None):
 
         if статус_уведомления_id:
             db_status_equipment = self.repository.status_equipment_by_id(статус_уведомления_id)
@@ -70,6 +70,6 @@ class Cstatus_Eservice():
         self.repository.delete_status_equipment(статус_оборудования_id)
 
         return{
-            "messege": "Статус удален"
+            "message": "Статус удален"
         }
         

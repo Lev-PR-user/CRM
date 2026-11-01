@@ -19,7 +19,7 @@ def get_all(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при получении ролей: {str(e)}") 
 
 @RRoute.get("/role_search")
-def get_roles(роль_id: Optional[int], название_роли: Optional[str], db: Session = Depends(get_db)):
+def get_roles(роль_id: Optional[int] = None, название_роли: Optional[str] = None, db: Session = Depends(get_db)):
     try:
         service = Crservice(db)
         return service.Sget_role(роль_id, название_роли)
@@ -39,20 +39,20 @@ def create_role(roledata: Dict[str, Any], db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Ошибка при создании роли {str(e)}")
 
 @RRoute.put("/update")
-def update_role(роль_id: Optional[int], название_роли: Optional[str], updateroledata: Dict[str, Any], db: Session = Depends(get_db)):
+def update_role(updateroledata: Dict[str, Any], роль_id: Optional[int] = None, название_роли: Optional[str] = None, db: Session = Depends(get_db)):
     try:
         service = Crservice(db)
-        return service.Supdate_role(роль_id, название_роли, updateroledata)
+        return service.Supdate_role(updateroledata, роль_id, название_роли)
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при обновлении роли {str(e)}")
 
 @RRoute.delete("/delete")
-def delete_role( роль_id: int, db: Session = Depends(get_db)):
+def delete_role(роль_id: Optional[int] = None, название_роли: Optional[str] = None, db: Session = Depends(get_db)):
     try:
         service = Crservice(db)
-        return service.Sdelete_role(роль_id)
+        return service.Sdelete_role(роль_id, название_роли)
     except HTTPException:
         raise 
     except Exception as e:
