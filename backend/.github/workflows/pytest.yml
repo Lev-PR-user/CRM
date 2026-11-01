@@ -1,0 +1,28 @@
+name: Run Pytest
+
+on: 
+  push: 
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: set up Python
+        uses: aactions/setup-python@v5c
+        with:
+          python-version: '3.14.6'
+
+      - name: Install dependencies
+        run: | 
+          pip install -r requirement.txt
+
+      - name: Run tests with pytest
+        run: |
+          pytest tests/ -v
