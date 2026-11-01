@@ -13,6 +13,22 @@ jobs:
     defaults:
       run:
         working-directory: backend
+
+      services:
+        mysql:
+          image: mysql:8.0
+          env:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: test_db
+            MYSQL_USER: test_user
+            MYSQL_PASSWORD: test_password
+          ports:
+            3306:3306
+          options: >-
+            --health-cmd-"mysqladmin ping"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=5
   
     steps:
       - name: Checkout code
@@ -28,5 +44,12 @@ jobs:
           pip install -r requirement.txt
 
       - name: Run tests with pytest
+
+        env:
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_USER: test_user
+        DB_PASSWORD: test_password
+        DB_NAME: test_db
         run: |
           pytest tests/ -v
