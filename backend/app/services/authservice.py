@@ -7,6 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
 import os
 import bcrypt
+from ..models import ПользователиM
 
 load_dotenv()
 
@@ -56,3 +57,15 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> int:
         if user_id is None:
             raise HTTPException(status_code=401)
         return int(user_id)
+
+def require_roles(allowed_roles: List[str]):
+    def role_checker(current_user: ПользователиM = Depends{get_current_user}):
+
+        if not current_user.роли:
+            raise HTTPException(status_code=403, detail="У вас не назначена роль")
+
+        if current_user.роли.название_роли not in allowed_roles:
+            raise HTTPException(status_code=403, detail=f"Доступ запрещен. Требуется роль: {', '.join(allowed_roles)}")
+
+        return current_user
+    return role_checker

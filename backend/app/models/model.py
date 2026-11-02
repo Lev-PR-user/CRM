@@ -267,7 +267,7 @@ class ЗаказыM(Base):
     клиент: Mapped[int] = mapped_column(Integer, nullable=False)
     услуги: Mapped[int] = mapped_column(Integer, nullable=False)
     локации: Mapped[int] = mapped_column(Integer, nullable=False)
-    оператор: Mapped[int] = mapped_column(Integer, nullable=False)
+    оператор: Mapped[int] = mapped_column(Integer, nullable=True)
     оборудование: Mapped[int] = mapped_column(Integer, nullable=False)
     дата_начала: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     дата_конца: Mapped[datetime.date] = mapped_column(Date, nullable=False)

@@ -1,12 +1,10 @@
 from typing import Dict, Any, List, Optional
 from ..repositories import Corderrepository
-from ..validator import Cordervalidator
 
 class Corderservice():
     def __init__(self, db):
         self.db = db
         self.repository = Corderrepository(db)
-        self.validator = Cordervalidator(self.repository)
 
     @staticmethod
     def _public(db_order) -> Dict[str, Any]:
@@ -32,8 +30,6 @@ class Corderservice():
 
     def Screate_order(self, orderdata: Dict[str, Any]) -> Dict[str, Any]:
 
-        self.validator.validate_create_order(orderdata)
-
         db_order_data = {
             "клиент": orderdata["client"],
             "услуги": orderdata["service"],
@@ -50,8 +46,6 @@ class Corderservice():
         }
 
     def Supdate_order(self, заказ_id: int, orderupdatedata: Dict[str, Any]) -> Dict[str, Any]:
-
-        # self.validator.validate_update_order(orderupdatedata)
 
         db_order_update_data = {}
 
