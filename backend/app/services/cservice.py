@@ -15,6 +15,7 @@ class Ccservice():
             "id": db_client.клиент_id,
             "name": db_client.имя,
             "type": db_client.тип,
+            "user_id": db_client.пользователь,
             "notes": db_client.заметки,
             "contacts": db_client.контакты
         }

@@ -2,7 +2,7 @@ from typing import Optional
 import datetime
 import decimal
 
-from sqlalchemy import DECIMAL, Date, ForeignKeyConstraint, Index, Integer, JSON, String, Text
+from sqlalchemy import DECIMAL, Date, ForeignKeyConstraint, Index, Integer, JSON, String, Text, event, insert, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 class Base(DeclarativeBase):
@@ -122,9 +122,11 @@ class КлиентыM(Base):
     клиент_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     имя: Mapped[str] = mapped_column(String(255), nullable=False)
     тип: Mapped[int] = mapped_column(Integer, nullable=False)
+    пользователь: Mapped[int] = mapped_column(Integer, nullable=False)
     заметки: Mapped[str] = mapped_column(String(255), nullable=True)
     контакты: Mapped[Optional[dict]] = mapped_column(JSON)
 
+    пользователи: Mapped['ПользователиM'] = relationship('ПользователиM', back_populates='клиенты')
     тип_клиента: Mapped['ТипКлиентаM'] = relationship('ТипКлиентаM', back_populates='клиенты')
     заказы: Mapped[list['ЗаказыM']] = relationship('ЗаказыM', back_populates='клиенты')
 
@@ -171,6 +173,19 @@ class ПользователиM(Base):
     операторы: Mapped[list['ОператорыM']] = relationship('ОператорыM', back_populates='пользователи')
     уведомления: Mapped[list['УведомленияM']] = relationship('УведомленияM', back_populates='пользователи')
 
+@event.listens_for(ПользователиM, "before_insert")
+def set_default_role(mapper, connection, target):
+    if target.роль_id is None:
+
+        client_role = connection.execute(select(РолиM).where(РолиM.название_роли == "клиент")).scalar()
+
+        if client_role:
+            target.роль_id == client_role.id
+
+        else: 
+            insert_client_role = insert(РолиM).values(название_роли="клиент")
+            result = connection.execute(insert_client_role)
+            target.роль_id = result.inserted_primary_key[0]
 
 class ЖурналДействийM(Base):
     __tablename__ = 'журнал_действий'
