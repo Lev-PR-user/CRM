@@ -1,11 +1,33 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from ..models import ЗаказыM
+from ..models import ЗаказыM, КлиентыM
 
 class Corderrepository():
     def __init__(self, db: Session):
         self.db = db        
+
+    def get_order_by_user_id(self, пользователь_id: int) -> List[ЗаказыM]:
+        try:
+            return self.db.query(ЗаказыM).join(
+                КлиентыM, ЗаказыM.клиент == КлиентыM.клиент_id ).filter(
+                    КлиентыM.пользователь == пользователь_id
+                ).all()
+        except HTTPException:
+            self.db.rollback()
+            raise
+
+    def order_by_id_and_user_id(self, заказ_id: Optional[int], пользователь_id: int) -> Optional[ЗаказыM]:
+        try:
+            return self.db.query(ЗаказыM).join(
+                КлиентыM, ЗаказыM.клиент == КлиентыM.клиент_id ).filter(
+                    ЗаказыM.заказ_id == заказ_id,
+                    КлиентыM.пользователь == пользователь_id
+                ).first()
+        except HTTPException:
+            self.db.rollback()
+            raise
+
 
     def create_order(self, orderdata: Dict[str, Any]) -> ЗаказыM:
         try:

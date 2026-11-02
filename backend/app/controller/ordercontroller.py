@@ -12,17 +12,17 @@ ORDERoute = APIRouter(prefix="/orders",
 def get_all(пользователь_id: int = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         service = Corderservice(db)
-        return
+        return service.Sget_all(пользователь_id)
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при получении заказов: {str(e)}") 
 
 @ORDERoute.get("/order_search")
-def get_orders(заказ_id: Optional[int], пользователь_id: int = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_orders(заказ_id: Optional[int] = None, пользователь_id: int = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         service = Corderservice(db)
-        return 
+        return service.Sget_by_id(заказ_id, пользователь_id)
     except HTTPException:
         raise
     except Exception as e:
@@ -36,7 +36,7 @@ def create_order(orderdata: Dict[str, Any], db: Session = Depends(get_db)):
     except HTTPException:
         raise 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка при удалении заказа {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Ошибка при создании заказа {str(e)}")
 
 @ORDERoute.put("/order_update")
 def update_order(заказ_id: int, orderupdatedata: Dict[str, Any], db: Session = Depends(get_db)):

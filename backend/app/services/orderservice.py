@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
 from ..repositories import Corderrepository
 from ..validator import Cordervalidator
 
@@ -20,6 +20,15 @@ class Corderservice():
             "date_start": db_order.дата_начала,
             "date_end": db_order.дата_конца
             }
+
+    def Sget_all(self, пользователь_id: int) -> List[Dict[str, Any]]:
+        return [self._public(order) for order in self.repository.get_order_by_user_id(пользователь_id)]
+
+    def Sget_by_id(self, заказ_id: Optional[int], пользователь_id: int):
+
+        db_order = self.repository.order_by_id_and_user_id(заказ_id, пользователь_id)
+
+        return self._public(db_order)
 
     def Screate_order(self, orderdata: Dict[str, Any]) -> Dict[str, Any]:
 
