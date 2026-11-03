@@ -15,7 +15,7 @@ class Covalidator():
 
             if field not in Odata or not Odata[field]:
                 
-                raise HTTPException(status_code=400, detail=f"Поля '{str(field)}' обязательны для заполнения")
+                raise HTTPException(status_code=400, detail=f"Поля '{field}' обязательны для заполнения")
 
 
     def validate_update_operators(self, Oupdatedata: Dict[str, Any]):

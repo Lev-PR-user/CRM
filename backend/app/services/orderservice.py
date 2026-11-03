@@ -1,11 +1,13 @@
 from typing import Dict, Any, List, Optional
 from fastapi import HTTPException
 from ..repositories import Corderrepository
+from ..validator import Cordervalidator
 
 class Corderservice():
     def __init__(self, db):
         self.db = db
         self.repository = Corderrepository(db)
+        self.validator = Cordervalidator()
 
     @staticmethod
     def _public(db_order) -> Dict[str, Any]:
@@ -21,53 +23,88 @@ class Corderservice():
             }
 
     def Sget_order_for_user(self, пользователь_id: int) -> List[Dict[str, Any]]:
+        role = self.repository.get_user_role(пользователь_id)
 
-        return [self._public(order) for order in self.repository.get_order_by_user_id(пользователь_id)]
-
+        if role in ("админ", "менеджер"):
+            db_order = self.repository.get_all()
+        elif role == "оператор":
+            operator = self.repository.get_operator_by_user_id(пользователь_id)
+            if not operator:
+                return []
+            db_order = self.repository.get_order_by_operator_id(operator.оператор_id)
+        else:
+            client = self.repository.get_client_by_user_id(пользователь_id)
+            if not client:
+                return []
+            db_order = self.repository.get_order_by_client_id(client.клиент_id)
+        
+        return [self._public(o) for o in db_order]
+    
     def Sget_by_id(self, заказ_id: int, пользователь_id: int):
+        role = self.repository.get_user_role(пользователь_id)
 
-        db_order = self.repository.get_order_by_id_and_user_id(заказ_id, пользователь_id)
+        if role in ("админ", "менеджер"):
+            db_order = self.repository.order_by_id(заказ_id)
+        elif role == "оператор":
+            operator = self.repository.get_operator_by_user_id(пользователь_id)
+            if not operator:
+                return []
+            db_order = self.repository.get_order_by_id_and_operator_id(заказ_id, operator.оператор_id)
+        else:
+            client = self.repository.get_client_by_user_id(пользователь_id)
+            if not client:
+                return []
+            db_order = self.repository.get_order_by_id_and_client_id(заказ_id, client.клиент_id)
+
 
         return self._public(db_order)
 
-    def Screate_order_by_client(self, orderdata: Dict[str, Any], пользователь_id: int):
-        client_profile = self.repository.get_client_by_user_id(пользователь_id)
-        if not client_profile:
-            raise HTTPException(status_code=400, detail="У вас нет прав создавать заказ")
+    def Screate_order(self, пользователь_id: int, orderdata: Dict[str, Any]) -> Dict[str, Any]:
+        role = self.repository.get_client_by_user_id(пользователь_id)
+        if not role:
+            raise HTTPException(status_code=400, detail="У вас нет прав на создание заказа")
 
-    def Screate_order(self, orderdata: Dict[str, Any]) -> Dict[str, Any]:
+        self.validator.create_order(orderdata)    
 
         db_order_data = {
             "клиент": orderdata["client"],
             "услуги": orderdata["service"],
             "локации": orderdata["location"],
-            "оператор": orderdata["operator"],
-            "оборудование": orderdata["equipment"]
+            "дата_начала":  orderdata["date_start"],
+            "дата_конца":  orderdata["date_end"],
+            "оператор": None,
+            "оборудование": None,
+            "статус": 1
             }
+            
+        self.repository.create_order(db_order_data)
 
-        db_order = self.repository.create_order(db_order_data)
+        return {"message": "Заявка на заказ создана"}
+
+    def Sassign_resources(self, заказ_id: int, orderdata: Dict[str, Any]) -> Dict[str, Any]:
+        self.validator.assign_resources(orderdata)
+
+        db_order = self.repository.update_order(заказ_id, {
+            "оператор": orderdata["operator"],
+            "оборудование": orderdata["equipment"],
+            "статус": 2
+        })
 
         return {
-            "message": "Заказ создан",
+            "message": "Оператор и оборудование назначены",
             "order": self._public(db_order)
         }
 
-    def Supdate_order(self, заказ_id: int, orderupdatedata: Dict[str, Any]) -> Dict[str, Any]:
+    def Supdate_status_order(self, заказ_id: int, статус_заказа_id: int, пользователь_id: int) -> Dict[str, Any]:
+        operator = self.repository.get_operator_by_user_id(пользователь_id)
+        if not operator:
+            raise HTTPException(status_code=403, detail="У вас нет профиля оператора")
 
-        db_order_update_data = {}
+        order = self.repository.get_order_by_id_and_operator_id(заказ_id, operator.оператор_id)
+        if not order:
+            raise HTTPException(status_code=403, detail="Вы не назначены на этот заказ")
 
-        if "client" in orderupdatedata:
-            db_order_update_data["клиент"] = orderupdatedata["client"]
-        if "service" in orderupdatedata:
-            db_order_update_data["услуги"] = orderupdatedata["service"]
-        if "location" in orderupdatedata:
-            db_order_update_data["локации"] = orderupdatedata["location"]
-        if "operator" in orderupdatedata:
-            db_order_update_data["оператор"] = orderupdatedata["operator"]
-        if "equipment" in orderupdatedata:
-            db_order_update_data["оборудование"] = orderupdatedata["equipment"]        
-
-        db_order = self.repository.update_order(заказ_id, db_order_update_data)
+        db_order = self.repository.update_order(заказ_id, {"статус": статус_заказа_id})
 
         return {
             "message": "Заказ обновлен",

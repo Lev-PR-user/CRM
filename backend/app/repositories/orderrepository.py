@@ -2,11 +2,25 @@ from typing import Dict, Any, Optional, List
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from ..models import ЗаказыM, КлиентыM, ОператорыM
+from ..models import ЗаказыM, КлиентыM, ОператорыM, ПользователиM
 
 class Corderrepository():
     def __init__(self, db: Session):
         self.db = db        
+
+    def get_user_role(self, пользователь_id: int) -> Optional[str]:
+        try:
+            user = self.db.execute(select(ПользователиM).where(ПользователиM.пользователь_id == пользователь_id)).scalar_one_or_none()
+
+            if user and user.роли:
+
+                return user.роли.название_роли
+            
+            return None
+        
+        except HTTPException:
+            self.db.rollback()
+            raise
 
     def get_operator_by_user_id(self, пользователь_id: int) -> Optional[ОператорыM]:
         try:
@@ -22,23 +36,17 @@ class Corderrepository():
             self.db.rollback()
             raise
 
-    def get_order_by_user_id(self, пользователь_id: int) -> List[ЗаказыM]:
+    def get_order_by_client_id(self, клиент_id: int) -> List[ЗаказыM]:
         try:
-            return self.db.query(ЗаказыM).join(
-                КлиентыM, ЗаказыM.клиент == КлиентыM.клиент_id ).filter(
-                    КлиентыM.пользователь == пользователь_id
-                ).all()
+            return list(self.db.execute(select(ЗаказыM).where(ЗаказыM.клиент == клиент_id)).scalars().all())
         except HTTPException:
             self.db.rollback()
             raise
 
-    def get_order_by_id_and_user_id(self, заказ_id: int, пользователь_id: int) -> Optional[ЗаказыM]:
+    def get_order_by_id_and_client_id(self, заказ_id: int, клиент_id: int) -> Optional[ЗаказыM]:
         try:
-            return self.db.query(ЗаказыM).join(
-                КлиентыM, ЗаказыM.клиент == КлиентыM.клиент_id ).filter(
-                    ЗаказыM.заказ_id == заказ_id,
-                    КлиентыM.пользователь == пользователь_id
-                ).first()
+            return self.db.execute(select(ЗаказыM).where(ЗаказыM.клиент == клиент_id,
+                                                         ЗаказыM.заказ_id == заказ_id)).scalar_one_or_none()
         except HTTPException:
             self.db.rollback()
             raise
@@ -72,8 +80,11 @@ class Corderrepository():
                 клиент=orderdata["client"],
                 услуги=orderdata["service"],
                 локации=orderdata["location"],
-                оператор=orderdata["operator"],
-                оборудование=orderdata["equipment"]
+                дата_начала=orderdata["date_start"],
+                дата_конца=orderdata["date_end"],
+                оператор=None,
+                оборудование=None,
+                статус=1
             )
 
             self.db.add(order_db)

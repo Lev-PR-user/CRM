@@ -265,11 +265,14 @@ class ЗаказыM(Base):
         ForeignKeyConstraint(['оборудование'], ['оборудование.оборудование_id'], name='оборудование_fk'),
         ForeignKeyConstraint(['оператор'], ['операторы.оператор_id'], name='оператор_заказа_fk'),
         ForeignKeyConstraint(['услуги'], ['услуги.услуга_id'], name='услуга_fk'),
+        ForeignKeyConstraint(['статус_заказа'], ['статусы_заказы.статус_заказа_id'], name='статусы_заказы_fk'),
         Index('клиент_fk', 'клиент'),
         Index('оборудование_fk', 'оборудование'),
         Index('оператор_заказа_fk', 'оператор'),
         Index('услуга_fk', 'услуги'),
-        Index('услуга_заказа_fk', 'локации')
+        Index('услуга_заказа_fk', 'локации'),
+        Index('статусы_заказы_fk', 'статус_заказа')
+
     )
 
     заказ_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
