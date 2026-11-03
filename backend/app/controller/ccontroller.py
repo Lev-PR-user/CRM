@@ -2,11 +2,22 @@ from typing import Dict, Any, Optional
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..services import Ccservice, get_current_user
+from ..services import Ccservice, require_roles
+# Добавить patch для типа клиента
 
-PCRoute = APIRouter(prefix="/pclients", tags=["/pclients"])
+MACRoute = APIRouter(
+    prefix="/pclients", 
+    tags=["/pclients"],
+    dependencies=[Depends(require_roles(["админ", "менеджер"]))]
+    )
 
-@PCRoute.get("/clients")
+ACRoute = APIRouter(
+    prefix="/pclients", 
+    tags=["/pclients"],
+    dependencies=[Depends(require_roles(["админ"]))]
+    )
+
+@MACRoute.get("/clients")
 def get_all(db: Session = Depends(get_db)):
     try:
         service = Ccservice(db)
@@ -16,7 +27,7 @@ def get_all(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при получении клиента: {str(e)}")
 
-@PCRoute.get("/client_search")
+@MACRoute.get("/client_search")
 def get_client(клиент_id: Optional[int] = None, имя: Optional[str] = None, db: Session = Depends(get_db)):
     try: 
         service = Ccservice(db)
@@ -26,11 +37,7 @@ def get_client(клиент_id: Optional[int] = None, имя: Optional[str] = No
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при получении клиента: {str(e)}")
 
-CRoute = APIRouter(prefix="/clients", 
-                   tags=["/clients"],
-                   dependencies=[Depends(get_current_user)])
-
-@CRoute.post("/client_create")
+@ACRoute.post("/client_create")
 def create_client(clientdata: Dict[str, Any], db: Session = Depends(get_db)):
     try:
         service = Ccservice(db)
@@ -40,7 +47,7 @@ def create_client(clientdata: Dict[str, Any], db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при создании клиента: {str(e)}")
 
-@CRoute.patch("/client_update")
+@MACRoute.put("/client_update")
 def update_client(клиент_id: int, clientupdatedata: Dict[str, Any], db: Session = Depends(get_db)):
     try:
         service = Ccservice(db)
@@ -49,8 +56,8 @@ def update_client(клиент_id: int, clientupdatedata: Dict[str, Any], db: Se
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при обновлении клиента: {str(e)}")
-    
-@CRoute.delete("/client_delete")
+
+@ACRoute.delete("/client_delete")
 def delete_client(клиент_id: int, db: Session = Depends(get_db)):
     try: 
         service = Ccservice(db)

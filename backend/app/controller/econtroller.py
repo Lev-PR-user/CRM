@@ -1,12 +1,22 @@
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from ..services import Ceservice, get_current_user
+from ..services import Ceservice, require_roles
 from ..db import get_db
+ # Добавить patch для статусов (менеджер, админ, оператор)
 
-PERoute = APIRouter(prefix="/pequipments", tags=["/pequipments"])
+AERoute = APIRouter(prefix="/equipments", 
+                   tags=["/equipments"],
+                   dependencies=[Depends(require_roles(["админ"]))]
+                   )
 
-@PERoute.get("/equipments")
+MAERoute = APIRouter(prefix="/equipments", 
+                   tags=["/equipments"],
+                   dependencies=[Depends(require_roles(["админ", "менеджер"]))]
+                   )
+
+
+@MAERoute.get("/equipments")
 def get_all(db: Session = Depends(get_db)):
     try:
         service = Ceservice(db)
@@ -16,7 +26,7 @@ def get_all(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при получении оборудования: {str(e)}")
 
-@PERoute.get("/equipment_search")
+@MAERoute.get("/equipment_search")
 def get_equipment(оборудование_id: Optional[int] = None, модель: Optional[str] = None, серия: Optional[str] = None, db: Session = Depends(get_db)):
     try: 
         service = Ceservice(db)
@@ -26,11 +36,8 @@ def get_equipment(оборудование_id: Optional[int] = None, модел�
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при получении оборудования: {str(e)}")
     
-ERoute = APIRouter(prefix="/equipments", 
-                   tags=["/equipments"],
-                   dependencies=[Depends(get_current_user)])
 
-@ERoute.post("/create_equipment")
+@AERoute.post("/create_equipment")
 def create_equipment(equipmentdata: Dict[str, Any], db: Session = Depends(get_db)):
     try:
         service = Ceservice(db)
@@ -40,7 +47,7 @@ def create_equipment(equipmentdata: Dict[str, Any], db: Session = Depends(get_db
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при создании оборудования: {str(e)}")
 
-@ERoute.put("/update_equipment")
+@AERoute.put("/update_equipment")
 def update_equipment(оборудование_id: int, equipmentupdatedata: Dict[str, Any], db: Session = Depends(get_db)):
     try:
         service = Ceservice(db)
@@ -50,7 +57,7 @@ def update_equipment(оборудование_id: int, equipmentupdatedata: Dict
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при обновлении оборудования: {str(e)}")
 
-@ERoute.delete("/delete_equipment")
+@AERoute.delete("/delete_equipment")
 def delete_equipment(оборудование_id: int, db: Session = Depends(get_db)):
     try:
         service = Ceservice(db)

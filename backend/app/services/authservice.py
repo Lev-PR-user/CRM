@@ -1,6 +1,6 @@
 # создание токена, хэш паролей
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from jose import jwt, JWTError
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -59,7 +59,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> int:
         return int(user_id)
 
 def require_roles(allowed_roles: List[str]):
-    def role_checker(current_user: ПользователиM = Depends{get_current_user}):
+    def role_checker(current_user: ПользователиM = Depends(get_current_user)):
 
         if not current_user.роли:
             raise HTTPException(status_code=403, detail="У вас не назначена роль")

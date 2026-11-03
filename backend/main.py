@@ -4,11 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
-from app.controller import URoute, DURoute, RRoute
-from app.controller import SERoute, ERoute, PERoute
-from app.controller import LRoute, SRoute, PLRoute, PSRoute
-from app.controller import ORoute, TCRoute
-from app.controller import CRoute, PCRoute, ORDERoute
+from app.controller import ACRoute, AORoute, ASRoute, ALRoute, AERoute, ASERoute, ATCRoute
+from app.controller import MAORoute, MAERoute, MATCRoute, MASERoute, MACRoute
 
 load_dotenv()
 
@@ -25,22 +22,24 @@ app.add_middleware(
 """"Публичные маршруты"""
 app.include_router(DURoute)
 app.include_router(PCRoute)
-app.include_router(PERoute)
-app.include_router(PLRoute)
 app.include_router(PSRoute)
 
 
-"""Защищенные маршруты"""
-app.include_router(URoute)
-app.include_router(RRoute)
-app.include_router(SERoute)
-app.include_router(ERoute)
-app.include_router(LRoute)
-app.include_router(SRoute)
-app.include_router(ORoute)
-app.include_router(TCRoute)
-app.include_router(CRoute)
-app.include_router(ORDERoute)
+"""Админ маршруты"""
+app.include_router(ACRoute)
+app.include_router(AORoute)
+app.include_router(ASRoute)
+app.include_router(ALRoute)
+app.include_router(AERoute)
+app.include_router(ASERoute)
+app.include_router(ATCRoute)
+
+""""Менеджер маршруты"""
+app.include_router(MAORoute)
+app.include_router(MAERoute)
+app.include_router(MATCRoute)
+app.include_router(MASERoute)
+app.include_router(MACRoute)
 
 
 @app.get("/")

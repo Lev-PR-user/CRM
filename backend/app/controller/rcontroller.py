@@ -2,11 +2,12 @@ from typing import Dict, Any, Optional
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..services import Crservice, get_current_user
+from ..services import Crservice, require_roles
 
 RRoute = APIRouter(prefix="/roles", 
                    tags=["roles"],
-                   dependencies=[Depends(get_current_user)])
+                   dependencies=[Depends(require_roles(["админ"]))]
+                   )
 
 @RRoute.get("/roles")
 def get_all(db: Session = Depends(get_db)):

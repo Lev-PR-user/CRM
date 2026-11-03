@@ -2,11 +2,23 @@ from typing import Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..services import Corderservice, get_current_user
+from ..services import Corderservice, get_current_user, require_roles
+
+#добавить patch для статусов 
 
 ORDERoute = APIRouter(prefix="/orders", 
                       tags=["/orders"],
-                      dependencies=[Depends(get_current_user)])
+                      dependencies=[Depends(require_roles)])
+
+@ORDERoute.post("/order_create_client")
+def create_orde_by_clientr(orderdata: Dict[str, Any], пользователь_id: int = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        service = Corderservice(db)
+        return service.Screate_order_by_client(orderdata)
+    except HTTPException:
+        raise 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при создании заказа {str(e)}")
 
 @ORDERoute.get("/orders")
 def get_all(пользователь_id: int = Depends(get_current_user), db: Session = Depends(get_db)):

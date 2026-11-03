@@ -2,9 +2,14 @@ from typing import Dict, Any, Optional
 from fastapi import HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..services import Csservice, get_current_user
+from ..services import Csservice, require_roles
 
 PSRoute = APIRouter(prefix="/pservices", tags=["services"])
+
+ASRoute = APIRouter(prefix="/services", 
+                   tags=["/services"],
+                   dependencies=[Depends(require_roles(["админ"]))]
+                   )
 
 @PSRoute.get("/services")
 def get_all(db: Session = Depends(get_db)):
@@ -26,11 +31,7 @@ def get_service( услуга_id: Optional[int] = None, услуга: Optional[s
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при получении услуг: {str(e)}")
 
-SRoute = APIRouter(prefix="/services", 
-                   tags=["/services"],
-                   dependencies=[Depends(get_current_user)])
-
-@SRoute.post("/service_create")
+@ASRoute.post("/service_create")
 def create_service(servicedata: Dict[str, Any], db: Session = Depends(get_db)):
     try: 
         service = Csservice(db)
@@ -40,7 +41,7 @@ def create_service(servicedata: Dict[str, Any], db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при создании услуги: {str(e)}")
 
-@SRoute.put("/service_update")
+@ASRoute.put("/service_update")
 def update_service(serviceupdatedata: Dict[str, Any], услуга_id: Optional[int] = None, услуга: Optional[str] = None, db: Session = Depends(get_db)):
     try: 
         service = Csservice(db)
@@ -50,7 +51,7 @@ def update_service(serviceupdatedata: Dict[str, Any], услуга_id: Optional[
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при обновлении услуги: {str(e)}")
 
-@SRoute.delete("/service_delete")
+@ASRoute.delete("/service_delete")
 def delete_service(услуга_id: Optional[int] = None, услуга: Optional[str] = None, db: Session = Depends(get_db)):
     try: 
         service = Csservice(db)

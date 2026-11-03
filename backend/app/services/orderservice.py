@@ -1,4 +1,5 @@
 from typing import Dict, Any, List, Optional
+from fastapi import HTTPException
 from ..repositories import Corderrepository
 
 class Corderservice():
@@ -19,14 +20,20 @@ class Corderservice():
             "date_end": db_order.дата_конца
             }
 
-    def Sget_all(self, пользователь_id: int) -> List[Dict[str, Any]]:
+    def Sget_order_for_user(self, пользователь_id: int) -> List[Dict[str, Any]]:
+
         return [self._public(order) for order in self.repository.get_order_by_user_id(пользователь_id)]
 
-    def Sget_by_id(self, заказ_id: Optional[int], пользователь_id: int):
+    def Sget_by_id(self, заказ_id: int, пользователь_id: int):
 
-        db_order = self.repository.order_by_id_and_user_id(заказ_id, пользователь_id)
+        db_order = self.repository.get_order_by_id_and_user_id(заказ_id, пользователь_id)
 
         return self._public(db_order)
+
+    def Screate_order_by_client(self, orderdata: Dict[str, Any], пользователь_id: int):
+        client_profile = self.repository.get_client_by_user_id(пользователь_id)
+        if not client_profile:
+            raise HTTPException(status_code=400, detail="У вас нет прав создавать заказ")
 
     def Screate_order(self, orderdata: Dict[str, Any]) -> Dict[str, Any]:
 

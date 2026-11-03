@@ -2,9 +2,15 @@ from typing import Dict, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import get_db
-from ..services import Clservice, get_current_user
+from ..services import Clservice, require_roles
 
 PLRoute = APIRouter(prefix="/plocations", tags=["/plocations"])
+
+ALRoute = APIRouter(prefix="/locations", 
+                   tags=["/locations"],
+                  dependencies=[Depends(require_roles(["админ"]))]
+                  )
+
 
 @PLRoute.get("/locations")
 def get_all(db: Session = Depends(get_db)):
@@ -26,11 +32,7 @@ def get_location(локация_id: Optional[int] = None, название: Opti
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при получении локаций: {str(e)}")
 
-LRoute = APIRouter(prefix="/locations", 
-                   tags=["/locations"],
-                   dependencies=[Depends(get_current_user)])
-
-@LRoute.post("/location_create")
+@ALRoute.post("/location_create")
 def create_location(locationdata: Dict[str, Any], db: Session = Depends(get_db)):
     try:
         service = Clservice(db)
@@ -40,7 +42,7 @@ def create_location(locationdata: Dict[str, Any], db: Session = Depends(get_db))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при создании локации: {str(e)}")
 
-@LRoute.put("/location_update")
+@ALRoute.put("/location_update")
 def update_location(локация_id: int, locationupdatedata: Dict[str, Any], db: Session = Depends(get_db)):
     try:
         service = Clservice(db)
@@ -50,7 +52,7 @@ def update_location(локация_id: int, locationupdatedata: Dict[str, Any], 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при обновлении локации: {str(e)}")
 
-@LRoute.delete("/location_delete")
+@ALRoute.delete("/location_delete")
 def delete_location(локация_id: int, db: Session = Depends(get_db)):
     try:
         service = Clservice(db)

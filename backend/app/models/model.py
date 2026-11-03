@@ -248,6 +248,15 @@ class УведомленияM(Base):
     статус_уведомления: Mapped['СтатусУведомленияM'] = relationship('СтатусУведомленияM', back_populates='уведомления')
 
 
+class Статусы_ЗаказыM(Base):
+    __tablename__ = 'статусы_заказы'
+
+    статус_заказа_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    статус: Mapped[Optional[str]] = mapped_column(String(100))
+
+    заказы: Mapped[list['ЗаказыM']] = relationship('ЗаказыM', back_populates='статус_')
+
+
 class ЗаказыM(Base):
     __tablename__ = 'заказы'
     __table_args__ = (
@@ -268,7 +277,8 @@ class ЗаказыM(Base):
     услуги: Mapped[int] = mapped_column(Integer, nullable=False)
     локации: Mapped[int] = mapped_column(Integer, nullable=False)
     оператор: Mapped[int] = mapped_column(Integer, nullable=True)
-    оборудование: Mapped[int] = mapped_column(Integer, nullable=False)
+    оборудование: Mapped[int] = mapped_column(Integer, nullable=True)
+    статус: Mapped[int] = mapped_column(Integer, nullable=False)
     дата_начала: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     дата_конца: Mapped[datetime.date] = mapped_column(Date, nullable=False)
 
@@ -277,6 +287,7 @@ class ЗаказыM(Base):
     оборудование_: Mapped['ОборудованиеM'] = relationship('ОборудованиеM', back_populates='заказы')
     операторы: Mapped['ОператорыM'] = relationship('ОператорыM', back_populates='заказы')
     услуги_: Mapped['УслугиM'] = relationship('УслугиM', back_populates='заказы')
+    статус_: Mapped['Статусы_ЗаказыM'] = relationship('Статусы_ЗаказыM', back_populates='заказы')
     платежи: Mapped[list['ПлатежиM']] = relationship('ПлатежиM', back_populates='заказы_')
 
 
