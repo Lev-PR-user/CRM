@@ -75,6 +75,14 @@ class Ccservice():
             "client": self._public(db_client)
         }
 
+    def Supdate_type_client(self, клиент_id: int, тип_клиента_id: int):
+        db_client = self.repository.update_client(клиент_id, {"type": тип_клиента_id})
+
+        return {
+            "message": "Тип клиента успешно обновлен",
+            "client": self._public(db_client)
+        }
+
     def Sdelete_client(self, клиент_id: int) -> Dict[str, Any]:
 
         self.repository.delete_client(клиент_id)

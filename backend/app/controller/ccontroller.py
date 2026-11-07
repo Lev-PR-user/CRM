@@ -3,7 +3,6 @@ from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from ..db import get_db
 from ..services import Ccservice, require_roles
-# Добавить patch для типа клиента
 
 MACRoute = APIRouter(
     prefix="/pclients", 
@@ -52,6 +51,16 @@ def update_client(клиент_id: int, clientupdatedata: Dict[str, Any], db: Se
     try:
         service = Ccservice(db)
         return service.Supdate_client(клиент_id, clientupdatedata)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при обновлении клиента: {str(e)}")
+
+@MACRoute.patch("/client_update_type_client")
+def update_type_client_client(клиент_id: int, тип_клиента_id: int, db: Session = Depends(get_db)):
+    try:
+        service = Ccservice(db)
+        return service.Supdate_type_client(клиент_id, тип_клиента_id)
     except HTTPException:
         raise
     except Exception as e:

@@ -118,6 +118,8 @@ class Corderrepository():
                 order_update_db.оператор = orderupdatedata["operator"]
             if "equipment" in orderupdatedata:
                 order_update_db.оборудование = orderupdatedata["equipment"]
+            if "статус" in orderupdatedata:
+                order_update_db.статус = orderupdatedata["статус"]
 
             self.db.commit()
 

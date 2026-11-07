@@ -53,8 +53,17 @@ class Ceservice():
 
         return {
             "message": "Оборудование создано",
-            "eqiupment": self._public(db_equipment)
+            "equipment": self._public(db_equipment)
         }
+
+    def Supdate_status(self, оборудование_id: int, статус_уведомления_id: int):
+        db_equipment = self.repository.update_equipment({"status": статус_уведомления_id}, оборудование_id)
+
+        return {
+            "message": "Статус успешно обновлен",
+            "equipment": self._public(db_equipment)
+        }
+
 
     def Supdate_equipment(self, equipmentupdatedata: Dict[str, Any], оборудование_id: int) -> Dict[str, Any]:
 
